@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: mybatis-generator-client
+    version: 1.0
