@@ -1,7 +1,8 @@
 package com.jean.mybatis.generator
 
+import com.jean.mybatis.generator.constant.CommonConstant
+import com.jean.mybatis.generator.scene.StageType
 import com.jean.mybatis.generator.utils.DialogUtil
-import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.image.Image
@@ -23,11 +24,10 @@ class MainApplication extends AbstractJavaFxApplicationSupport {
     @Override
     void start(Stage stage) throws Exception {
         super.start(stage)
-        FXMLLoader loader = new FXMLLoader()
-        loader.setControllerFactory {
-            applicationContext.getBean(it)
-        }
-        Parent root = loader.load(getClass().getResourceAsStream("/fxml/Scene.fxml"))
+        Parent root = loadFxml("/fxml/Scene.fxml")
+        Parent databaseConnection = loadFxml("/fxml/DatabaseConnection.fxml")
+        CommonConstant.SCENES.put(StageType.MAIN.toString(), root)
+        CommonConstant.SCENES.put(StageType.DATABASE_CONNECTION.toString(), databaseConnection)
         Scene scene = new Scene(root)
         scene.getStylesheets().add("/styles/Styles.css")
         String name = environment.getProperty("spring.application.name")

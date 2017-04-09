@@ -32,8 +32,9 @@ repositories {
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'mysql:mysql-connector-java:6.0.6'
+    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
 }
 
 jar {

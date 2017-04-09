@@ -2,6 +2,8 @@ package com.jean.mybatis.generator
 
 import javafx.application.Application
 import javafx.application.Preloader
+import javafx.fxml.FXMLLoader
+import javafx.scene.Parent
 import javafx.stage.Stage
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
@@ -34,6 +36,14 @@ abstract class AbstractJavaFxApplicationSupport extends Application {
 
     protected static void launchApp(Class<? extends AbstractJavaFxApplicationSupport> applicationClass, String[] args) {
         AbstractJavaFxApplicationSupport.args = args
-        Application.launch(applicationClass, args)
+        launch(applicationClass, args)
+    }
+
+    Parent loadFxml(String name) {
+        FXMLLoader loader = new FXMLLoader()
+        loader.setControllerFactory {
+            applicationContext.getBean(it)
+        }
+        loader.load(getClass().getResourceAsStream(name))
     }
 }

@@ -1,14 +1,19 @@
 package com.jean.mybatis.generator.controller
 
-import com.jean.mybatis.generator.MainApplication
+import com.jean.mybatis.generator.constant.CommonConstant
+import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
+import com.jean.mybatis.generator.factory.TreeCellFactory
+import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.DatabaseItem
+import com.jean.mybatis.generator.model.DatabaseItemTypeEnum
+import com.jean.mybatis.generator.scene.StageType
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.fxml.FXML
-import javafx.fxml.Initializable
-import javafx.scene.control.Toggle
-import javafx.scene.control.ToggleButton
-import javafx.scene.control.ToggleGroup
+import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.layout.Pane
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
@@ -17,12 +22,11 @@ import org.springframework.stereotype.Controller
  * Created by jinshubao on 2017/4/8.
  */
 @Controller
-class MainController implements Initializable {
-
-    @FXML
-    ToggleButton user
+class MainController extends BaseController {
     @FXML
     ToggleGroup topbuttons
+    @FXML
+    ToggleButton user
     @FXML
     ToggleButton table
     @FXML
@@ -41,20 +45,45 @@ class MainController implements Initializable {
     ToggleButton plan
     @FXML
     ToggleButton model
+    @FXML
+    MenuItem newConnectionItem
+    @FXML
+    TreeView<DatabaseItem> databaseSchemaView
+    @FXML
+    TableView databaseTableView
+    @FXML
+    ProgressIndicator progressIndicator
+    @FXML
+    Label message
 
     @Autowired
-    MainApplication application
+    MySQLDatabaseMetadata mySQLDatabaseMetadata
+
+    @Autowired
+    TreeCellFactory treeCellFactory
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-        topbuttons.selectedToggleProperty().addListener({ ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue ->
-            def headerText = """这是一段很长很长的信息"""
-            def contentText = """这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息这是一段很长很长的信息"""
-//            DialogUtil.warning(headerText, headerText, contentText)
-            def value = DialogUtil.choiceDialog("请选择", "请选择一门语言", "选不选不由你", "java", "java", "C", "groovy")
-            println value
-            def value1 = DialogUtil.textInputDialog("请选择", "请选择一门语言", "选不选不由你", "C")
-            println value1
-        } as ChangeListener)
+        databaseSchemaView.setRoot(new TreeItem())
+        databaseSchemaView.setShowRoot(false)
+        message.setText(null)
+        progressIndicator.setVisible(false)
+        def newConnectionEventHandler = {
+            DialogUtil.databaseConnectionDialog("新建${it.getSource().getText()}数据库连接", null, CommonConstant.SCENES.get(StageType.DATABASE_CONNECTION.toString()) as Pane) {
+                DatabaseConfig config ->
+                    def connection = new TreeItem(new DatabaseItem(config, DatabaseItemTypeEnum.CONNECTION))
+                    databaseSchemaView.getRoot().getChildren().add(connection)
+                    connection.setExpanded(true)
+                    def databases = mySQLDatabaseMetadata.getDatabases(config)
+                    databases.each {
+                        def cfg = new DatabaseItem(config, DatabaseItemTypeEnum.DATABASE)
+                        cfg.databaseName = it as String
+                        def item = new TreeItem(cfg)
+                        connection.getChildren().add(item)
+                    }
+            }
+        }
+        newConnectionItem.setOnAction(newConnectionEventHandler)
+        databaseSchemaView.setCellFactory(treeCellFactory)
     }
 }

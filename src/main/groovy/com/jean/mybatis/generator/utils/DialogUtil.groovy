@@ -1,6 +1,10 @@
 package com.jean.mybatis.generator.utils
 
+import com.jean.mybatis.generator.model.DataBaseTypeEnum
+import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.EncodingEnum
 import javafx.scene.control.*
+import javafx.scene.layout.Pane
 import javafx.stage.WindowEvent
 
 import java.util.function.Consumer
@@ -117,7 +121,7 @@ class DialogUtil {
      * @return
      */
     static String textInputDialog(String title, String headerText, String contentText, String defValue) {
-        textInputDialog(title, headerText, contentText, defValue){}
+        textInputDialog(title, headerText, contentText, defValue) {}
     }
 
     /**
@@ -139,6 +143,58 @@ class DialogUtil {
             option.ifPresent(eventHandler as Consumer)
         }
         dialog.getEditor().getText()
+    }
+
+    /**
+     * 数据库连接对话框
+     * @param title
+     * @param headerText
+     * @param contentText
+     * @param pane
+     * @param eventHandler
+     * @return
+     */
+    static void databaseConnectionDialog(String title, String headerText, Pane pane, Closure eventHandler) {
+        def dialog = new Dialog<DatabaseConfig>()
+        dialog.setTitle(title)
+        dialog.setHeaderText(headerText)
+        dialog.dialogPane.setContent(pane)
+        dialog.dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
+        dialog.setResultConverter { type ->
+            if (type) {
+                if (type.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                    def values = [:]
+                    pane.getChildren().each { node ->
+                        if (node instanceof TextField) {
+                            values.put(node.getId(), node.getText())
+                        } else if (node instanceof ComboBox) {
+                            values.put(node.id, node.getSelectionModel().getSelectedItem())
+                        } else if (node instanceof CheckBox) {
+                            values.put(node.id, node.isSelected())
+                        }
+                    }
+                    def config = new DatabaseConfig()
+                    config.dataBaseType = values?.dataBaseType as DataBaseTypeEnum
+                    config.host = values?.host as String
+                    config.port = values?.port as String
+                    config.username = values?.username as String
+                    config.password = values?.password as String
+                    config.encoding = values?.encoding as EncodingEnum
+                    config.properties = values?.properties as String
+                    config.savePassword = values?.savePassword as Boolean
+                    return config
+                }
+            }
+            return null
+        }
+        def option = dialog.showAndWait()
+        option.ifPresent {
+            if (it != ButtonType.OK) {
+                if (eventHandler) {
+                    eventHandler.call(dialog.result)
+                }
+            }
+        }
     }
 
     /**
