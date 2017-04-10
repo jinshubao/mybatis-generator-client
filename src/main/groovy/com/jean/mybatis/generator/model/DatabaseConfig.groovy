@@ -5,7 +5,7 @@ package com.jean.mybatis.generator.model
  */
 class DatabaseConfig {
 
-    DataBaseTypeEnum dataBaseType
+    DatabaseTypeEnum databaseType
 
     String host
 
@@ -20,8 +20,4 @@ class DatabaseConfig {
     String properties
 
     Boolean savePassword
-
-    String databaseName
-
-    String tableName
 }

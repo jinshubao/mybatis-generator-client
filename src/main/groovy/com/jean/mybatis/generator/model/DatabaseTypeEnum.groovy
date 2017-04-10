@@ -4,14 +4,14 @@ package com.jean.mybatis.generator.model
  *
  * Created by jinshubao on 2017/4/9.
  */
-enum DataBaseTypeEnum {
+enum DatabaseTypeEnum {
     MySQL("MySQL", "com.mysql.jdbc.Driver"),
     Oracle("Oracle", "oracle.jdbc.driver.OracleDriver")
 
     String name
     String value
 
-    DataBaseTypeEnum(String name, String value) {
+    DatabaseTypeEnum(String name, String value) {
         this.value = value
         this.name = name
     }
@@ -25,7 +25,7 @@ enum DataBaseTypeEnum {
         return null
     }
 
-    static DataBaseTypeEnum getDataBaseType(String value) {
+    static DatabaseTypeEnum getDataBaseType(String value) {
         for (def item : values()) {
             if (item.value == value) {
                 return item

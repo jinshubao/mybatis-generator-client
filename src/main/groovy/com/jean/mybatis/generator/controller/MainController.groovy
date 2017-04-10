@@ -3,16 +3,16 @@ package com.jean.mybatis.generator.controller
 import com.jean.mybatis.generator.constant.CommonConstant
 import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
 import com.jean.mybatis.generator.factory.TreeCellFactory
+import com.jean.mybatis.generator.model.AbstractTreeCellItem
+import com.jean.mybatis.generator.model.ConnectionItem
 import com.jean.mybatis.generator.model.DatabaseConfig
-import com.jean.mybatis.generator.model.DatabaseItem
-import com.jean.mybatis.generator.model.DatabaseItemTypeEnum
+import com.jean.mybatis.generator.model.TableItem
 import com.jean.mybatis.generator.scene.StageType
 import com.jean.mybatis.generator.utils.DialogUtil
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.scene.layout.Pane
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -48,7 +48,7 @@ class MainController extends BaseController {
     @FXML
     MenuItem newConnectionItem
     @FXML
-    TreeView<DatabaseItem> databaseSchemaView
+    TreeView<AbstractTreeCellItem> databaseSchemaView
     @FXML
     TableView databaseTableView
     @FXML
@@ -69,21 +69,27 @@ class MainController extends BaseController {
         message.setText(null)
         progressIndicator.setVisible(false)
         def newConnectionEventHandler = {
-            DialogUtil.databaseConnectionDialog("新建${it.getSource().getText()}数据库连接", null, CommonConstant.SCENES.get(StageType.DATABASE_CONNECTION.toString()) as Pane) {
-                DatabaseConfig config ->
-                    def connection = new TreeItem(new DatabaseItem(config, DatabaseItemTypeEnum.CONNECTION))
-                    databaseSchemaView.getRoot().getChildren().add(connection)
-                    connection.setExpanded(true)
-                    def databases = mySQLDatabaseMetadata.getDatabases(config)
-                    databases.each {
-                        def cfg = new DatabaseItem(config, DatabaseItemTypeEnum.DATABASE)
-                        cfg.databaseName = it as String
-                        def item = new TreeItem(cfg)
-                        connection.getChildren().add(item)
-                    }
+            DialogUtil.databaseConnectionDialog("新建${it.getSource().getText()}数据库连接", null,
+                    CommonConstant.SCENES.get(StageType.DATABASE_CONNECTION.toString()) as Pane) { DatabaseConfig config ->
+                def connection = new TreeItem(new ConnectionItem(config))
+                databaseSchemaView.getRoot().getChildren().add(connection)
             }
         }
         newConnectionItem.setOnAction(newConnectionEventHandler)
         databaseSchemaView.setCellFactory(treeCellFactory)
+        databaseSchemaView.selectionModel.selectedItemProperty().addListener({ observableValue, oldValue, newValue ->
+            if (newValue) {
+                def value = newValue.value
+                if (value instanceof TableItem) {
+                    databaseTableView.items.clear()
+                    databaseTableView.items.addAll(mySQLDatabaseMetadata.getColumns(value, value.databaseName, value.tableName))
+                }
+            }
+
+        } as ChangeListener)
+
+        databaseTableView.getColumns().get(0).setCellValueFactory { new SimpleObjectProperty(it.value.name) }
+        databaseTableView.getColumns().get(1).setCellValueFactory { new SimpleObjectProperty(it.value.type) }
+        databaseTableView.getColumns().get(2).setCellValueFactory { new SimpleObjectProperty(it.value.comment) }
     }
 }

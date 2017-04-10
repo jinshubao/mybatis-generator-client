@@ -1,8 +1,8 @@
 package com.jean.mybatis.generator.controller
 
 import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
-import com.jean.mybatis.generator.model.DataBaseTypeEnum
 import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.DatabaseTypeEnum
 import com.jean.mybatis.generator.model.EncodingEnum
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.fxml.FXML
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller
 class DatabaseConnectionController extends BaseController {
 
     @FXML
-    ComboBox<DataBaseTypeEnum> dataBaseType
+    ComboBox<DatabaseTypeEnum> dataBaseType
     @FXML
     TextField host
     @FXML
@@ -41,14 +41,15 @@ class DatabaseConnectionController extends BaseController {
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-        dataBaseType.items.addAll(DataBaseTypeEnum.values())
+        dataBaseType.items.addAll(DatabaseTypeEnum.values())
         dataBaseType.selectionModel.selectFirst()
         encoding.items.addAll(EncodingEnum.values())
         encoding.selectionModel.selectFirst()
+        properties.setText("serverTimezone=UTC&useUnicode=true&useSSL=false")
         testConnection.setOnAction {
             try {
                 def config = new DatabaseConfig()
-                config.dataBaseType = dataBaseType.value
+                config.databaseType = dataBaseType.value
                 config.host = host.getText()
                 config.port = port.getText()
                 config.username = username.getText()

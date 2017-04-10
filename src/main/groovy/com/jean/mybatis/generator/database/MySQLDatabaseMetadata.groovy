@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service
 class MySQLDatabaseMetadata implements DatabaseMetadataInterface {
 
 
-    protected Sql getSql(DatabaseConfig config) {
-        def url = getConnectionUrl(config)
-        return Sql.newInstance(url, config.username, config.password, config.dataBaseType.value)
+    protected Sql getSql(DatabaseConfig config, String databaseName) {
+        def url = getConnectionUrl(config, databaseName)
+        return Sql.newInstance(url, config.username, config.password, config.databaseType.value)
     }
 
     @Override
     List getDatabases(DatabaseConfig config) {
-        def sql = getSql(config)
+        def sql = getSql(config, null)
         def list = []
         sql.eachRow("SELECT SCHEMA_NAME FROM `information_schema`.`SCHEMATA`") {
             list << it.SCHEMA_NAME
@@ -29,24 +29,24 @@ class MySQLDatabaseMetadata implements DatabaseMetadataInterface {
 
     @Override
     boolean testConnection(DatabaseConfig config) {
-        def sql = getSql(config)
+        def sql = getSql(config, null)
         return sql != null
     }
 
     @Override
-    List getTables(DatabaseConfig config) {
-        def sql = getSql(config)
+    List getTables(DatabaseConfig config, String databaseName) {
+        def sql = getSql(config, databaseName)
         def list = []
-        sql.eachRow("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA=?", [config.databaseName]) {
+        sql.eachRow("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA=?", [databaseName]) {
             list << it.TABLE_NAME
         }
         return list
     }
 
-    String getConnectionUrl(DatabaseConfig config) {
+    String getConnectionUrl(DatabaseConfig config, String databaseName) {
         def url = "jdbc:mysql://${config.host}:${config.port}"
-        if (config.databaseName) {
-            url += "/${config.databaseName}"
+        if (databaseName) {
+            url += "/${databaseName}"
         }
         def properties = []
         if (config.encoding) {
@@ -61,5 +61,15 @@ class MySQLDatabaseMetadata implements DatabaseMetadataInterface {
             url += properties.join("&")
         }
         return url
+    }
+
+    @Override
+    List getColumns(DatabaseConfig config, String databaseName, String tableName) {
+        def sql = getSql(config, databaseName)
+        def list = []
+        sql.eachRow("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?", [tableName]) {
+            list << ["name": it.COLUMN_NAME, "type": it.DATA_TYPE, "comment": it.COLUMN_COMMENT]
+        }
+        return list
     }
 }

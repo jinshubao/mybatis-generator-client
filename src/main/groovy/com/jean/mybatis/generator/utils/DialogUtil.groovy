@@ -1,13 +1,11 @@
 package com.jean.mybatis.generator.utils
 
-import com.jean.mybatis.generator.model.DataBaseTypeEnum
 import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.DatabaseTypeEnum
 import com.jean.mybatis.generator.model.EncodingEnum
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import javafx.stage.WindowEvent
-
-import java.util.function.Consumer
 
 /**
  * 弹框工具类
@@ -52,8 +50,8 @@ class DialogUtil {
         alert.setTitle(title)
         alert.setHeaderText(headerText)
         def option = alert.showAndWait()
-        if (eventHandler) {
-            option.ifPresent(eventHandler as Consumer)
+        option.ifPresent {
+            it == ButtonType.OK && eventHandler && eventHandler.call()
         }
     }
 
@@ -66,28 +64,29 @@ class DialogUtil {
      * @param eventHandler
      */
     static void dialog(String title, String headerText, String contentText, ButtonType[] buttonTypes, Closure eventHandler) {
+        dialog(title, headerText, contentText, buttonTypes, eventHandler, {})
+    }
+
+    /**
+     * 通用对话框
+     * @param title
+     * @param headerText
+     * @param contentText
+     * @param buttonTypes
+     * @param okEventHandler
+     * @param cancelEvenHandler
+     */
+    static void dialog(String title, String headerText, String contentText, ButtonType[] buttonTypes, Closure okEventHandler, Closure cancelEvenHandler) {
         def dialog = new Dialog<>()
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
         dialog.setContentText(contentText)
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypes)
         def option = dialog.showAndWait()
-        if (eventHandler) {
-            option.ifPresent(eventHandler as Consumer)
+        option.ifPresent {
+            it == ButtonType.OK && okEventHandler && okEventHandler.call()
+            it == ButtonType.CANCEL && cancelEvenHandler && cancelEvenHandler.call()
         }
-    }
-
-    /**
-     * 选择对话框
-     * @param title
-     * @param headerText
-     * @param contentText
-     * @param defValue
-     * @param items
-     * @return
-     */
-    static <T> T choiceDialog(String title, String headerText, String contentText, T defValue, T... items) {
-        choiceDialog(title, headerText, contentText, defValue, items) {}
     }
 
     /**
@@ -100,16 +99,16 @@ class DialogUtil {
      * @param eventHandler
      * @return
      */
-    static <T> T choiceDialog(String title, String headerText, String contentText, T defValue, T[] items, Closure eventHandler) {
+    static <T> void choiceDialog(String title, String headerText, String contentText, T defValue, T[] items, Closure eventHandler) {
         def dialog = new ChoiceDialog(defValue, items)
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
         dialog.setContentText(contentText)
-        def option = dialog.showAndWait()
-        if (eventHandler) {
-            option.ifPresent(eventHandler as Consumer)
+        def button = dialog.dialogPane.lookupButton(ButtonType.OK) as Button
+        button.setOnAction {
+            eventHandler && eventHandler.call(dialog.result)
         }
-        dialog.getSelectedItem() as T
+        dialog.showAndWait()
     }
 
     /**
@@ -120,7 +119,7 @@ class DialogUtil {
      * @param defValue
      * @return
      */
-    static String textInputDialog(String title, String headerText, String contentText, String defValue) {
+    static void textInputDialog(String title, String headerText, String contentText, String defValue) {
         textInputDialog(title, headerText, contentText, defValue) {}
     }
 
@@ -133,16 +132,16 @@ class DialogUtil {
      * @param eventHandler
      * @return
      */
-    static String textInputDialog(String title, String headerText, String contentText, String defValue, Closure eventHandler) {
+    static void textInputDialog(String title, String headerText, String contentText, String defValue, Closure eventHandler) {
         def dialog = new TextInputDialog(defValue)
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
         dialog.setContentText(contentText)
-        def option = dialog.showAndWait()
-        if (eventHandler) {
-            option.ifPresent(eventHandler as Consumer)
+        def button = dialog.dialogPane.lookupButton(ButtonType.OK) as Button
+        button.setOnAction {
+            eventHandler && eventHandler.call(dialog.result)
         }
-        dialog.getEditor().getText()
+        dialog.showAndWait()
     }
 
     /**
@@ -155,7 +154,7 @@ class DialogUtil {
      * @return
      */
     static void databaseConnectionDialog(String title, String headerText, Pane pane, Closure eventHandler) {
-        def dialog = new Dialog<DatabaseConfig>()
+        def dialog = new Dialog<>()
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
         dialog.dialogPane.setContent(pane)
@@ -174,7 +173,7 @@ class DialogUtil {
                         }
                     }
                     def config = new DatabaseConfig()
-                    config.dataBaseType = values?.dataBaseType as DataBaseTypeEnum
+                    config.databaseType = values?.dataBaseType as DatabaseTypeEnum
                     config.host = values?.host as String
                     config.port = values?.port as String
                     config.username = values?.username as String
@@ -187,14 +186,11 @@ class DialogUtil {
             }
             return null
         }
-        def option = dialog.showAndWait()
-        option.ifPresent {
-            if (it != ButtonType.OK) {
-                if (eventHandler) {
-                    eventHandler.call(dialog.result)
-                }
-            }
-        }
+        def ok = dialog.dialogPane.lookupButton(ButtonType.OK) as Button
+        ok.setOnAction({
+            eventHandler && eventHandler.call(dialog.result)
+        })
+        dialog.showAndWait()
     }
 
     /**
@@ -202,10 +198,8 @@ class DialogUtil {
      * @param event
      */
     static void exit(WindowEvent event) {
-        dialog("退出提示", "确认退出？", "", [ButtonType.OK, ButtonType.CANCEL] as ButtonType[]) {
-            if (it != ButtonType.OK) {
-                event.consume()
-            }
+        dialog("退出提示", "确认退出？", "", [ButtonType.OK, ButtonType.CANCEL] as ButtonType[], {}) {
+            event.consume()
         }
     }
 }
