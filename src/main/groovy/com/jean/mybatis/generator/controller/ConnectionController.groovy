@@ -1,6 +1,6 @@
 package com.jean.mybatis.generator.controller
 
-import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
+import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.model.DatabaseConfig
 import com.jean.mybatis.generator.model.DatabaseTypeEnum
 import com.jean.mybatis.generator.model.EncodingEnum
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller
  * Created by jinshubao on 2017/4/8.
  */
 @Controller
-class DatabaseConnectionController extends BaseController {
+class ConnectionController extends BaseController {
 
     @FXML
     ComboBox<DatabaseTypeEnum> dataBaseType
@@ -37,7 +37,7 @@ class DatabaseConnectionController extends BaseController {
     CheckBox savePassword
 
     @Autowired
-    MySQLDatabaseMetadata mySQLDatabaseMetadata
+    IMetadataService metadataService
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
@@ -56,14 +56,10 @@ class DatabaseConnectionController extends BaseController {
                 config.password = password.getText()
                 config.encoding = encoding.value
                 config.properties = properties.getText()
-                if (mySQLDatabaseMetadata.testConnection(config)) {
-                    DialogUtil.information("连接成功", "连接成功", "")
-                } else {
-                    DialogUtil.error("连接失败", "连接失败", "")
-                }
+                metadataService.testConnection(config)
+                DialogUtil.information("连接成功", null, "连接成功")
             } catch (Exception e) {
-                logger.error(e.message, e)
-                DialogUtil.error("连接失败", "连接失败", e.message)
+                DialogUtil.exception("连接失败", "连接失败", e)
             }
         }
     }

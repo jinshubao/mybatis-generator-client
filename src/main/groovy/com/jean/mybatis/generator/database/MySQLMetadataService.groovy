@@ -1,6 +1,7 @@
 package com.jean.mybatis.generator.database
 
 import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.TableInfo
 import groovy.sql.Sql
 import org.springframework.stereotype.Service
 
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service
  * Created by jinshubao on 2017/4/9.
  */
 @Service
-class MySQLDatabaseMetadata implements DatabaseMetadataInterface {
+class MySQLMetadataService implements IMetadataService {
 
 
     protected Sql getSql(DatabaseConfig config, String databaseName) {
@@ -64,11 +65,11 @@ class MySQLDatabaseMetadata implements DatabaseMetadataInterface {
     }
 
     @Override
-    List getColumns(DatabaseConfig config, String databaseName, String tableName) {
+    List<TableInfo> getColumns(DatabaseConfig config, String databaseName, String tableName) {
         def sql = getSql(config, databaseName)
         def list = []
         sql.eachRow("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?", [tableName]) {
-            list << ["name": it.COLUMN_NAME, "type": it.DATA_TYPE, "comment": it.COLUMN_COMMENT]
+            list << new TableInfo(it.COLUMN_NAME, it.DATA_TYPE, it.COLUMN_COMMENT)
         }
         return list
     }

@@ -3,11 +3,12 @@ package com.jean.mybatis.generator.model
  *
  * Created by jinshubao on 2017/4/9.
  */
-class TableItem extends DatabaseItem {
+class DatabaseTableItem extends AbstractTreeCellItem {
 
+    String databaseName
     String tableName
 
-    TableItem(DatabaseConfig config) {
+    DatabaseTableItem(DatabaseConfig config) {
         super(config)
     }
 

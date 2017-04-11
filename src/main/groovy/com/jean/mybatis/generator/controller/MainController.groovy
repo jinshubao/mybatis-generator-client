@@ -1,15 +1,10 @@
 package com.jean.mybatis.generator.controller
 
 import com.jean.mybatis.generator.constant.CommonConstant
-import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
+import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.factory.TreeCellFactory
-import com.jean.mybatis.generator.model.AbstractTreeCellItem
-import com.jean.mybatis.generator.model.ConnectionItem
-import com.jean.mybatis.generator.model.DatabaseConfig
-import com.jean.mybatis.generator.model.TableItem
-import com.jean.mybatis.generator.scene.StageType
+import com.jean.mybatis.generator.model.*
 import com.jean.mybatis.generator.utils.DialogUtil
-import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
 import javafx.fxml.FXML
 import javafx.scene.control.*
@@ -50,14 +45,14 @@ class MainController extends BaseController {
     @FXML
     TreeView<AbstractTreeCellItem> databaseSchemaView
     @FXML
-    TableView databaseTableView
+    TableView<TableInfo> databaseTableView
     @FXML
     ProgressIndicator progressIndicator
     @FXML
     Label message
 
     @Autowired
-    MySQLDatabaseMetadata mySQLDatabaseMetadata
+    IMetadataService metadataService
 
     @Autowired
     TreeCellFactory treeCellFactory
@@ -69,8 +64,8 @@ class MainController extends BaseController {
         message.setText(null)
         progressIndicator.setVisible(false)
         def newConnectionEventHandler = {
-            DialogUtil.databaseConnectionDialog("新建${it.getSource().getText()}数据库连接", null,
-                    CommonConstant.SCENES.get(StageType.DATABASE_CONNECTION.toString()) as Pane) { DatabaseConfig config ->
+            DialogUtil.databaseConnectionDialog("新建数据库连接", null,
+                    CommonConstant.SCENES.get(StageTypeEnum.CONNECTION.toString()) as Pane).ifPresent { DatabaseConfig config ->
                 def connection = new TreeItem(new ConnectionItem(config))
                 databaseSchemaView.getRoot().getChildren().add(connection)
             }
@@ -80,16 +75,20 @@ class MainController extends BaseController {
         databaseSchemaView.selectionModel.selectedItemProperty().addListener({ observableValue, oldValue, newValue ->
             if (newValue) {
                 def value = newValue.value
-                if (value instanceof TableItem) {
+                if (value instanceof DatabaseTableItem) {
                     databaseTableView.items.clear()
-                    databaseTableView.items.addAll(mySQLDatabaseMetadata.getColumns(value, value.databaseName, value.tableName))
+                    databaseTableView.items.addAll(metadataService.getColumns(value, value.databaseName, value.tableName))
                 }
             }
-
         } as ChangeListener)
-
-        databaseTableView.getColumns().get(0).setCellValueFactory { new SimpleObjectProperty(it.value.name) }
-        databaseTableView.getColumns().get(1).setCellValueFactory { new SimpleObjectProperty(it.value.type) }
-        databaseTableView.getColumns().get(2).setCellValueFactory { new SimpleObjectProperty(it.value.comment) }
+        databaseTableView.getColumns().get(0).setCellValueFactory {
+            it.value.nameProperty()
+        }
+        databaseTableView.getColumns().get(1).setCellValueFactory {
+            it.value.typeProperty()
+        }
+        databaseTableView.getColumns().get(2).setCellValueFactory {
+            it.value.commentProperty()
+        }
     }
 }

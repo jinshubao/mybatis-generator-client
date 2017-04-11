@@ -14,7 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext
  * javafx-springboot
  * Created by jinshubao on 2017/4/8.
  */
-abstract class AbstractJavaFxApplicationSupport extends Application {
+abstract class ApplicationSupport extends Application {
     protected static final Logger logger = LoggerFactory.getLogger(Application.class)
     protected static String[] args
     protected ConfigurableApplicationContext applicationContext
@@ -39,9 +39,9 @@ abstract class AbstractJavaFxApplicationSupport extends Application {
         applicationContext.close()
     }
 
-    protected static void launchApp(Class<? extends AbstractJavaFxApplicationSupport> applicationClass, String[] args) {
+    protected static void launchApp(Class<? extends ApplicationSupport> applicationClass, String[] args) {
         logger.info("launch with args {}", args)
-        AbstractJavaFxApplicationSupport.args = args
+        ApplicationSupport.args = args
         launch(applicationClass, args)
     }
 

@@ -1,8 +1,7 @@
 package com.jean.mybatis.generator.factory
 
-import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
-import com.jean.mybatis.generator.model.AbstractTreeCellItem
-import com.jean.mybatis.generator.model.DatabaseItem
+import com.jean.mybatis.generator.database.IMetadataService
+import com.jean.mybatis.generator.database.MySQLMetadataService
 import javafx.scene.control.TreeCell
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,9 +14,9 @@ abstract class AbstractTreeCell<T> extends TreeCell<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass())
 
-    protected MySQLDatabaseMetadata mySQLDatabaseMetadata
+    protected IMetadataService metadataService
 
-    AbstractTreeCell(MySQLDatabaseMetadata mySQLDatabaseMetadata) {
-        this.mySQLDatabaseMetadata = mySQLDatabaseMetadata
+    AbstractTreeCell(IMetadataService metadataService) {
+        this.metadataService = metadataService
     }
 }

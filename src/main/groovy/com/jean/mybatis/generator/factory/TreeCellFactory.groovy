@@ -1,6 +1,6 @@
 package com.jean.mybatis.generator.factory
 
-import com.jean.mybatis.generator.database.MySQLDatabaseMetadata
+import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.model.AbstractTreeCellItem
 import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeView
@@ -15,11 +15,12 @@ import org.springframework.stereotype.Component
 
 @Component
 class TreeCellFactory implements Callback<TreeView<AbstractTreeCellItem>, TreeCell<AbstractTreeCellItem>> {
+
     @Autowired
-    MySQLDatabaseMetadata mySQLDatabaseMetadata
+    IMetadataService metadataService
 
     @Override
     TreeCell<AbstractTreeCellItem> call(TreeView<AbstractTreeCellItem> param) {
-        return new DatabaseTreeCell(mySQLDatabaseMetadata)
+        return new DatabaseTreeCell(metadataService)
     }
 }

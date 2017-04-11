@@ -1,14 +1,13 @@
 package com.jean.mybatis.generator
 
 import com.jean.mybatis.generator.constant.CommonConstant
-import com.jean.mybatis.generator.scene.StageType
+import com.jean.mybatis.generator.model.StageTypeEnum
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.scene.Parent
 import javafx.scene.Scene
+import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
@@ -18,7 +17,7 @@ import org.springframework.core.env.Environment
  * Created by jinshubao on 2017/4/8.
  */
 @SpringBootApplication
-class MainApplication extends AbstractJavaFxApplicationSupport {
+class MainApplication extends ApplicationSupport {
 
     @Autowired
     private Environment environment
@@ -27,9 +26,9 @@ class MainApplication extends AbstractJavaFxApplicationSupport {
     void start(Stage stage) throws Exception {
         super.start(stage)
         Parent root = loadFxml("/fxml/Scene.fxml")
-        Parent databaseConnection = loadFxml("/fxml/DatabaseConnection.fxml")
-        CommonConstant.SCENES.put(StageType.MAIN.toString(), root)
-        CommonConstant.SCENES.put(StageType.DATABASE_CONNECTION.toString(), databaseConnection)
+        Parent databaseConnection = loadFxml("/fxml/Connection.fxml")
+        CommonConstant.SCENES.put(StageTypeEnum.MAIN.toString(), root)
+        CommonConstant.SCENES.put(StageTypeEnum.CONNECTION.toString(), databaseConnection)
         Scene scene = new Scene(root)
         scene.getStylesheets().add("/styles/Styles.css")
         String name = environment.getProperty("spring.application.name")
@@ -38,8 +37,12 @@ class MainApplication extends AbstractJavaFxApplicationSupport {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/image/mybatis-logo.png")))
         stage.setScene(scene)
         stage.show()
-        stage.setOnCloseRequest {
-            DialogUtil.exit(it)
+        stage.setOnCloseRequest { event ->
+            DialogUtil.confirmation("退出提示", null, "确认退出？").ifPresent() {
+                if (it != ButtonType.OK) {
+                    event.consume()
+                }
+            }
         }
     }
 

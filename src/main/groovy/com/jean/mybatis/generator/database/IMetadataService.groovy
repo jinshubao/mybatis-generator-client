@@ -1,15 +1,13 @@
 package com.jean.mybatis.generator.database
 
-import com.jean.mybatis.generator.model.AbstractTreeCellItem
 import com.jean.mybatis.generator.model.DatabaseConfig
-import com.jean.mybatis.generator.model.TableItem
-import javafx.scene.control.TreeItem
+import com.jean.mybatis.generator.model.TableInfo
 
 /**
  *
  * Created by jinshubao on 2017/4/9.
  */
-interface DatabaseMetadataInterface {
+interface IMetadataService {
 
     List getDatabases(DatabaseConfig config)
 
@@ -19,5 +17,5 @@ interface DatabaseMetadataInterface {
 
     String getConnectionUrl(DatabaseConfig config, String databaseName)
 
-    List getColumns(DatabaseConfig config, String databaseName,String tableName)
+    List<TableInfo> getColumns(DatabaseConfig config, String databaseName, String tableName)
 }
