@@ -3,12 +3,17 @@ package com.jean.mybatis.generator.controller
 import com.jean.mybatis.generator.constant.CommonConstant
 import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.factory.TreeCellFactory
-import com.jean.mybatis.generator.model.*
+import com.jean.mybatis.generator.model.AbstractTreeCellItem
+import com.jean.mybatis.generator.model.ConnectionItem
+import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.StageTypeEnum
 import com.jean.mybatis.generator.utils.DialogUtil
-import javafx.beans.value.ChangeListener
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
+import org.mybatis.generator.api.MyBatisGenerator
+import org.mybatis.generator.config.Configuration
+import org.mybatis.generator.internal.DefaultShellCallback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
@@ -29,23 +34,11 @@ class MainController extends BaseController {
     @FXML
     ToggleButton function
     @FXML
-    ToggleButton event
-    @FXML
-    ToggleButton select
-    @FXML
-    ToggleButton report
-    @FXML
-    ToggleButton backup
-    @FXML
-    ToggleButton plan
-    @FXML
     ToggleButton model
     @FXML
     MenuItem newConnectionItem
     @FXML
     TreeView<AbstractTreeCellItem> databaseSchemaView
-    @FXML
-    TableView<TableInfo> databaseTableView
     @FXML
     ProgressIndicator progressIndicator
     @FXML
@@ -72,23 +65,18 @@ class MainController extends BaseController {
         }
         newConnectionItem.setOnAction(newConnectionEventHandler)
         databaseSchemaView.setCellFactory(treeCellFactory)
-        databaseSchemaView.selectionModel.selectedItemProperty().addListener({ observableValue, oldValue, newValue ->
-            if (newValue) {
-                def value = newValue.value
-                if (value instanceof DatabaseTableItem) {
-                    databaseTableView.items.clear()
-                    databaseTableView.items.addAll(metadataService.getColumns(value, value.databaseName, value.tableName))
-                }
-            }
-        } as ChangeListener)
-        databaseTableView.getColumns().get(0).setCellValueFactory {
-            it.value.nameProperty()
-        }
-        databaseTableView.getColumns().get(1).setCellValueFactory {
-            it.value.typeProperty()
-        }
-        databaseTableView.getColumns().get(2).setCellValueFactory {
-            it.value.commentProperty()
-        }
+
+        user.setOnAction({
+            List<String> warnings = new ArrayList<String>()
+            boolean overwrite = true;
+            Configuration config = new Configuration()
+
+            //   ... fill out the config object as appropriate...
+
+            DefaultShellCallback callback = new DefaultShellCallback(overwrite)
+            MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
+            myBatisGenerator.generate(null)
+        })
     }
+
 }

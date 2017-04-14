@@ -8,6 +8,11 @@ import javafx.scene.Scene
 import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import org.mybatis.generator.api.MyBatisGenerator
+import org.mybatis.generator.config.Configuration
+import org.mybatis.generator.config.PluginConfiguration
+import org.mybatis.generator.config.xml.ConfigurationParser
+import org.mybatis.generator.internal.DefaultShellCallback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment

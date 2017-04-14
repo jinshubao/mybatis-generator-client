@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <properties resource="generator-config_mysql.properties" />
+    <context id="context1" targetRuntime="MyBatis3">
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <jdbcConnection
+                driverClass="${generatorConfiguration.context.jdbcConnection.jdbcConnection.driverClass}"
+                connectionURL="${generatorConfiguration.context.jdbcConnection.jdbcConnection.connectionURL}"
+                userId="${generatorConfiguration.context.jdbcConnection.jdbcConnection.userId}"
+                password="${generatorConfiguration.context.jdbcConnection.jdbcConnection.password}"/>
+        <javaModelGenerator targetPackage="com.jean.models" targetProject="${targetProject}/src/test/java"/>
+        <sqlMapGenerator targetPackage="mapper" targetProject="${targetProject}/src/test/resources"/>
+        <javaClientGenerator targetPackage="com.jean.mapper" targetProject="${targetProject}/src/test/java"
+                             type="XMLMAPPER"/>
+
+        <table tableName="biz_city" enableSelectByExample="false" enableDeleteByExample="false"
+               enableCountByExample="false" enableUpdateByExample="false">
+            <generatedKey column="ID" sqlStatement="MySql" identity="true"/>
+        </table>
+
+    </context>
+</generatorConfiguration>
