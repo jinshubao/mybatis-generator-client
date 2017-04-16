@@ -136,7 +136,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
             treeItem.setExpanded(true)
             item.isOpen.set(true)
         } catch (Exception e) {
-            DialogUtil.exception("打开失败", "打开连接失败", e)
+            DialogUtil.exceptionDialog("打开失败", "打开连接失败", e)
         }
     }
 
@@ -157,7 +157,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
             }
         } catch (Exception e) {
             logger.error(e.message, e)
-            DialogUtil.exception("打开失败", "打开数据库失败", e)
+            DialogUtil.exceptionDialog("打开失败", "打开数据库失败", e)
         }
     }
 

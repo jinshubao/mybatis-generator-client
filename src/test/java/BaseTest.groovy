@@ -1,7 +1,8 @@
 import org.junit.Test
 import org.mybatis.generator.api.MyBatisGenerator
 import org.mybatis.generator.config.Configuration
-import org.mybatis.generator.config.PluginConfiguration
+import org.mybatis.generator.config.GeneratedKey
+import org.mybatis.generator.config.TableConfiguration
 import org.mybatis.generator.config.xml.ConfigurationParser
 import org.mybatis.generator.internal.DefaultShellCallback
 
@@ -55,9 +56,12 @@ class BaseTest {
         File configFile = new File(getClass().getResource("/generatorConfig.xml").toURI());
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
-        def plugin = new PluginConfiguration()
-        plugin.setConfigurationType("com.jean.mybatis.generator.plugins.CommentPlugin")
-        config.contexts.get(0).addPluginConfiguration(plugin)
+        def context = config.getContext("context1")
+        def tableConfiguration = new TableConfiguration(context)
+        tableConfiguration.setTableName("biz_district")
+        tableConfiguration.generatedKey = new GeneratedKey("ID", "MySql", true, null)
+        context.getTableConfigurations().add(tableConfiguration)
+        println config.toDocument().formattedContent
         DefaultShellCallback callback = new DefaultShellCallback(overwrite);
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
         myBatisGenerator.generate(null);

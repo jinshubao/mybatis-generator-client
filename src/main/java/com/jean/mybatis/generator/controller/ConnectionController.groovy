@@ -59,7 +59,7 @@ class ConnectionController extends BaseController {
                 metadataService.testConnection(config)
                 DialogUtil.information("连接成功", null, "连接成功")
             } catch (Exception e) {
-                DialogUtil.exception("连接失败", "连接失败", e)
+                DialogUtil.exceptionDialog("连接失败", "连接失败", e)
             }
         }
     }

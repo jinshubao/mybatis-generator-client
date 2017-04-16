@@ -8,11 +8,6 @@ import javafx.scene.Scene
 import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import org.mybatis.generator.api.MyBatisGenerator
-import org.mybatis.generator.config.Configuration
-import org.mybatis.generator.config.PluginConfiguration
-import org.mybatis.generator.config.xml.ConfigurationParser
-import org.mybatis.generator.internal.DefaultShellCallback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.core.env.Environment
@@ -31,9 +26,11 @@ class MainApplication extends ApplicationSupport {
     void start(Stage stage) throws Exception {
         super.start(stage)
         Parent root = loadFxml("/fxml/Scene.fxml")
-        Parent databaseConnection = loadFxml("/fxml/Connection.fxml")
         CommonConstant.SCENES.put(StageTypeEnum.MAIN.toString(), root)
+        Parent databaseConnection = loadFxml("/fxml/Connection.fxml")
         CommonConstant.SCENES.put(StageTypeEnum.CONNECTION.toString(), databaseConnection)
+        Parent configuration = loadFxml("/fxml/configuration.fxml")
+        CommonConstant.SCENES.put(StageTypeEnum.CONFIGURATION.toString(), configuration)
         Scene scene = new Scene(root)
         scene.getStylesheets().add("/styles/Styles.css")
         String name = environment.getProperty("spring.application.name")

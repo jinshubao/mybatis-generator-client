@@ -11,9 +11,6 @@ import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.fxml.FXML
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
-import org.mybatis.generator.api.MyBatisGenerator
-import org.mybatis.generator.config.Configuration
-import org.mybatis.generator.internal.DefaultShellCallback
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
@@ -23,22 +20,35 @@ import org.springframework.stereotype.Controller
  */
 @Controller
 class MainController extends BaseController {
+
     @FXML
-    ToggleGroup topbuttons
+    TreeView<AbstractTreeCellItem> databaseView
+
     @FXML
-    ToggleButton user
+    MenuBar menuBar
     @FXML
-    ToggleButton table
+    Menu fileMenu
     @FXML
-    ToggleButton view
+    MenuItem newConnectionMenuItem
     @FXML
-    ToggleButton function
+    MenuItem exitMenuItem
+
     @FXML
-    ToggleButton model
+    Menu editMenu
     @FXML
-    MenuItem newConnectionItem
+    MenuItem newConfigurationMenuItem
     @FXML
-    TreeView<AbstractTreeCellItem> databaseSchemaView
+    MenuItem manageConfigurationMenuItem
+    @FXML
+    Menu configurationListMenu
+    @FXML
+    ToggleGroup configurationGroup
+
+    @FXML
+    Menu helpMenu
+    @FXML
+    MenuItem aboutMenuItem
+
     @FXML
     ProgressIndicator progressIndicator
     @FXML
@@ -46,37 +56,42 @@ class MainController extends BaseController {
 
     @Autowired
     IMetadataService metadataService
-
     @Autowired
     TreeCellFactory treeCellFactory
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-        databaseSchemaView.setRoot(new TreeItem())
-        databaseSchemaView.setShowRoot(false)
+
+
+        databaseView.setRoot(new TreeItem())
+        databaseView.setShowRoot(false)
         message.setText(null)
         progressIndicator.setVisible(false)
-        def newConnectionEventHandler = {
-            DialogUtil.databaseConnectionDialog("新建数据库连接", null,
+        newConnectionMenuItem.setOnAction {
+            DialogUtil.newConnectionDialog("新建数据库连接", null,
                     CommonConstant.SCENES.get(StageTypeEnum.CONNECTION.toString()) as Pane).ifPresent { DatabaseConfig config ->
                 def connection = new TreeItem(new ConnectionItem(config))
-                databaseSchemaView.getRoot().getChildren().add(connection)
+                databaseView.getRoot().getChildren().add(connection)
             }
         }
-        newConnectionItem.setOnAction(newConnectionEventHandler)
-        databaseSchemaView.setCellFactory(treeCellFactory)
+        newConfigurationMenuItem.setOnAction {
+            DialogUtil.configurationDialog("新增配置文件", null,
+                    CommonConstant.SCENES.get(StageTypeEnum.CONFIGURATION.toString()) as Pane).ifPresent {
+                logger.info(it.toString())
+            }
+        }
 
-        user.setOnAction({
-            List<String> warnings = new ArrayList<String>()
-            boolean overwrite = true;
-            Configuration config = new Configuration()
+        databaseView.setCellFactory(treeCellFactory)
 
-            //   ... fill out the config object as appropriate...
+        /*List<String> warnings = new ArrayList<String>()
+        boolean overwrite = true;
+        Configuration config = new Configuration()
 
-            DefaultShellCallback callback = new DefaultShellCallback(overwrite)
-            MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
-            myBatisGenerator.generate(null)
-        })
+        //   ... fill out the config object as appropriate...
+
+        DefaultShellCallback callback = new DefaultShellCallback(overwrite)
+        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
+        myBatisGenerator.generate(null)*/
     }
 
 }

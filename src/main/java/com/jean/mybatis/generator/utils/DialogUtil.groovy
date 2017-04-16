@@ -7,6 +7,7 @@ import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
+import javafx.util.Callback
 
 /**
  * 弹框工具类
@@ -108,7 +109,7 @@ class DialogUtil {
      * @param eventHandler
      * @return
      */
-    static Optional<DatabaseConfig> databaseConnectionDialog(String title, String headerText, Pane pane) {
+    static Optional<DatabaseConfig> newConnectionDialog(String title, String headerText, Pane pane) {
         def dialog = new Dialog<>()
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
@@ -144,7 +145,18 @@ class DialogUtil {
         return dialog.showAndWait()
     }
 
-    static void exception(String title, String headerText, Throwable ex) {
+    static Optional<DatabaseConfig> configurationDialog(String title, String headerText, Pane pane) {
+        def dialog = new Dialog<>()
+        dialog.setTitle(title)
+        dialog.setHeaderText(headerText)
+        dialog.dialogPane.setContent(pane)
+        dialog.dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
+        def stage = dialog.getDialogPane().getScene().getWindow() as Stage
+        stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/image/mybatis-logo.png")))
+        return dialog.showAndWait()
+    }
+
+    static void exceptionDialog(String title, String headerText, Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR)
         alert.setTitle(title)
         alert.setHeaderText(headerText)
