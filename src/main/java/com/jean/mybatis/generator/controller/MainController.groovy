@@ -9,6 +9,7 @@ import com.jean.mybatis.generator.model.DatabaseConfig
 import com.jean.mybatis.generator.model.StageTypeEnum
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.fxml.FXML
+import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import org.springframework.beans.factory.annotation.Autowired
@@ -61,8 +62,6 @@ class MainController extends BaseController {
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-
-
         databaseView.setRoot(new TreeItem())
         databaseView.setShowRoot(false)
         message.setText(null)
@@ -76,7 +75,7 @@ class MainController extends BaseController {
         }
         newConfigurationMenuItem.setOnAction {
             DialogUtil.configurationDialog("新增配置文件", null,
-                    CommonConstant.SCENES.get(StageTypeEnum.CONFIGURATION.toString()) as Pane).ifPresent {
+                    CommonConstant.SCENES.get(StageTypeEnum.CONFIGURATION.toString()) as Node).ifPresent {
                 logger.info(it.toString())
             }
         }
@@ -93,5 +92,4 @@ class MainController extends BaseController {
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
         myBatisGenerator.generate(null)*/
     }
-
 }

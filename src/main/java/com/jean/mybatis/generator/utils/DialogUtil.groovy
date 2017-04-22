@@ -3,11 +3,11 @@ package com.jean.mybatis.generator.utils
 import com.jean.mybatis.generator.model.DatabaseConfig
 import com.jean.mybatis.generator.model.DatabaseTypeEnum
 import com.jean.mybatis.generator.model.EncodingEnum
+import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
-import javafx.util.Callback
 
 /**
  * 弹框工具类
@@ -109,24 +109,25 @@ class DialogUtil {
      * @param eventHandler
      * @return
      */
-    static Optional<DatabaseConfig> newConnectionDialog(String title, String headerText, Pane pane) {
+    static Optional<DatabaseConfig> newConnectionDialog(String title, String headerText, Node node) {
         def dialog = new Dialog<>()
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
-        dialog.dialogPane.setContent(pane)
+        dialog.dialogPane.setContent(node)
         dialog.dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         def stage = dialog.getDialogPane().getScene().getWindow() as Stage
         stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/image/mybatis-logo.png")))
         dialog.setResultConverter { type ->
             if (type.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 def values = [:]
-                pane.getChildren().each { node ->
-                    if (node instanceof TextField) {
-                        values.put(node.getId(), node.getText())
-                    } else if (node instanceof ComboBox) {
-                        values.put(node.id, node.getSelectionModel().getSelectedItem())
-                    } else if (node instanceof CheckBox) {
-                        values.put(node.id, node.isSelected())
+                def pane = node as Pane
+                pane.getChildren().each { it ->
+                    if (it instanceof TextField) {
+                        values.put(it.getId(), it.getText())
+                    } else if (it instanceof ComboBox) {
+                        values.put(it.id, it.getSelectionModel().getSelectedItem())
+                    } else if (it instanceof CheckBox) {
+                        values.put(it.id, it.isSelected())
                     }
                 }
                 def config = new DatabaseConfig()
@@ -145,11 +146,11 @@ class DialogUtil {
         return dialog.showAndWait()
     }
 
-    static Optional<DatabaseConfig> configurationDialog(String title, String headerText, Pane pane) {
+    static Optional<DatabaseConfig> configurationDialog(String title, String headerText, Node node) {
         def dialog = new Dialog<>()
         dialog.setTitle(title)
         dialog.setHeaderText(headerText)
-        dialog.dialogPane.setContent(pane)
+        dialog.dialogPane.setContent(node)
         dialog.dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         def stage = dialog.getDialogPane().getScene().getWindow() as Stage
         stage.getIcons().add(new Image(this.getClass().getResourceAsStream("/image/mybatis-logo.png")))

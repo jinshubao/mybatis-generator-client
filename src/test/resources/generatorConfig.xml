@@ -19,6 +19,5 @@
                enableCountByExample="false" enableUpdateByExample="false">
             <generatedKey column="ID" sqlStatement="MySql" identity="true"/>
         </table>
-
     </context>
 </generatorConfiguration>

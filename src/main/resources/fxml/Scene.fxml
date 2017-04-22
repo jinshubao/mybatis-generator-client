@@ -1,51 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.jean.mybatis.generator.controller.MainController">
     <top>
-        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
-            <menus>
-                <Menu fx:id="fileMenu" mnemonicParsing="false" text="文件">
-                    <items>
-                        <MenuItem fx:id="newConnectionMenuItem" mnemonicParsing="false" text="新建连接" />
-                        <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="退出" />
-                    </items>
-                </Menu>
-                <Menu fx:id="editMenu" mnemonicParsing="false" text="编辑">
-                    <items>
-                        <MenuItem fx:id="newConfigurationMenuItem" mnemonicParsing="false" text="新增配置文件" />
-                        <MenuItem fx:id="manageConfigurationMenuItem" mnemonicParsing="false" text="管理配置文件" />
-                        <Menu fx:id="configurationListMenu" mnemonicParsing="false" text="选择要使用的配置">
-                            <items>
-                                <RadioMenuItem mnemonicParsing="false" text="系统默认配置（所有配置使用默认值）">
-                                    <toggleGroup>
-                                        <ToggleGroup fx:id="configurationGroup" />
-                                    </toggleGroup>
-                                </RadioMenuItem>
-                                <RadioMenuItem mnemonicParsing="false" text="配置文件1" toggleGroup="$configurationGroup" />
-                                <RadioMenuItem mnemonicParsing="false" text="配置文件2" toggleGroup="$configurationGroup" />
-                                <RadioMenuItem mnemonicParsing="false" text="配置文件2" toggleGroup="$configurationGroup" />
-                                <RadioMenuItem mnemonicParsing="false" text="配置文件3" toggleGroup="$configurationGroup" />
-                                <RadioMenuItem mnemonicParsing="false" text="配置文件4" toggleGroup="$configurationGroup" />
-                            </items>
-                        </Menu>
-                    </items>
-                </Menu>
-                <Menu fx:id="helpMenu" mnemonicParsing="false" text="帮助">
-                    <items>
-                        <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
+      <VBox>
+         <children>
+              <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+                  <menus>
+                      <Menu fx:id="fileMenu" mnemonicParsing="false" text="文件">
+                          <items>
+                              <MenuItem fx:id="newConnectionMenuItem" mnemonicParsing="false" text="新建连接" />
+                              <MenuItem fx:id="exitMenuItem" mnemonicParsing="false" text="退出" />
+                          </items>
+                      </Menu>
+                      <Menu fx:id="editMenu" mnemonicParsing="false" text="编辑">
+                          <items>
+                              <MenuItem fx:id="newConfigurationMenuItem" mnemonicParsing="false" text="新增配置文件" />
+                              <MenuItem fx:id="manageConfigurationMenuItem" mnemonicParsing="false" text="管理配置文件" />
+                              <Menu fx:id="configurationListMenu" mnemonicParsing="false" text="选择要使用的配置">
+                                  <items>
+                                      <RadioMenuItem mnemonicParsing="false" text="系统默认配置（所有配置使用默认值）">
+                                          <toggleGroup>
+                                              <ToggleGroup fx:id="configurationGroup" />
+                                          </toggleGroup>
+                                      </RadioMenuItem>
+                                      <RadioMenuItem mnemonicParsing="false" text="配置文件1" toggleGroup="$configurationGroup" />
+                                      <RadioMenuItem mnemonicParsing="false" text="配置文件2" toggleGroup="$configurationGroup" />
+                                      <RadioMenuItem mnemonicParsing="false" text="配置文件2" toggleGroup="$configurationGroup" />
+                                      <RadioMenuItem mnemonicParsing="false" text="配置文件3" toggleGroup="$configurationGroup" />
+                                      <RadioMenuItem mnemonicParsing="false" text="配置文件4" toggleGroup="$configurationGroup" />
+                                  </items>
+                              </Menu>
+                          </items>
+                      </Menu>
+                      <Menu fx:id="helpMenu" mnemonicParsing="false" text="帮助">
+                          <items>
+                              <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" text="About" />
+                          </items>
+                      </Menu>
+                  </menus>
+              </MenuBar>
+            <HBox>
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="40.0" text="Button" />
+                        <Button layoutX="210.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" text="Button" />
+                        <Button layoutX="265.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" text="Button" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </HBox>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/image/mybatis-logo-large.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
     </top>
     <bottom>
-        <HBox alignment="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" BorderPane.alignment="CENTER_LEFT">
+        <HBox alignment="CENTER_RIGHT" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" BorderPane.alignment="CENTER_LEFT">
             <children>
-                <ProgressIndicator fx:id="progressIndicator" />
                 <Label fx:id="message" text="--" HBox.hgrow="ALWAYS" />
+                <ProgressIndicator fx:id="progressIndicator" />
             </children>
         </HBox>
     </bottom>
@@ -53,38 +79,34 @@
         <SplitPane fx:id="splitPane" dividerPositions="0.2" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
             <items>
                 <TreeView fx:id="databaseView" />
-                <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
-                    <items>
-                        <TabPane>
-                            <tabs>
-                                <Tab text="表信息">
-                                    <content>
-                                        <TableView layoutX="55.0" layoutY="55.0">
-                                            <columns>
-                                                <TableColumn prefWidth="75.0" text="C1" />
-                                                <TableColumn prefWidth="75.0" text="C2" />
-                                                <TableColumn prefWidth="75.0" text="C2" />
-                                            </columns>
-                                            <columnResizePolicy>
-                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                            </columnResizePolicy>
-                                        </TableView>
-                                    </content>
-                                </Tab>
-                                <Tab text="SqlMapper">
-                                    <content>
-                                        <TextArea layoutX="118.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
-                                    </content>
-                                </Tab>
-                                <Tab text="Model.java">
-                                    <content>
-                                        <TextArea layoutX="118.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
-                                    </content>
-                                </Tab>
-                            </tabs>
-                        </TabPane>
-                    </items>
-                </SplitPane>
+                  <TabPane>
+                      <tabs>
+                          <Tab text="表信息">
+                              <content>
+                                  <TableView layoutX="55.0" layoutY="55.0">
+                                      <columns>
+                                          <TableColumn prefWidth="75.0" text="C1" />
+                                          <TableColumn prefWidth="75.0" text="C2" />
+                                          <TableColumn prefWidth="75.0" text="C2" />
+                                      </columns>
+                                      <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                      </columnResizePolicy>
+                                  </TableView>
+                              </content>
+                          </Tab>
+                          <Tab text="SqlMapper">
+                              <content>
+                                  <TextArea layoutX="118.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                              </content>
+                          </Tab>
+                          <Tab text="Model.java">
+                              <content>
+                                  <TextArea layoutX="118.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                              </content>
+                          </Tab>
+                      </tabs>
+                  </TabPane>
             </items>
         </SplitPane>
     </center>
