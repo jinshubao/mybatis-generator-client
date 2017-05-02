@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
@@ -49,9 +50,8 @@
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="40.0" text="Button" />
-                        <Button layoutX="210.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" text="Button" />
-                        <Button layoutX="265.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" text="Button" />
+                        <Button mnemonicParsing="false" prefHeight="40.0" text="生成" />
+                        <Button layoutX="265.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" text="配置" />
                      </children>
                      <padding>
                         <Insets left="10.0" />
@@ -105,6 +105,89 @@
                                   <TextArea layoutX="118.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
                               </content>
                           </Tab>
+						  <Tab text="配置">
+							<content>
+                        <HBox>
+                           <children>
+      							  <ScrollPane HBox.hgrow="ALWAYS">
+      								  <content>
+      									 <GridPane>
+      										<columnConstraints>
+      										   <ColumnConstraints hgrow="SOMETIMES" />
+      										   <ColumnConstraints hgrow="SOMETIMES" />
+      										</columnConstraints>
+      										<rowConstraints>
+      										   <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints prefHeight="30.0" vgrow="ALWAYS" />
+      										   <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints vgrow="SOMETIMES" />
+      										   <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      										</rowConstraints>
+      										<children>
+      										   <Label text="配置文件名称" />
+      										   <Label text="targetRuntime" GridPane.rowIndex="2" />
+      										   <Label text="plugins" GridPane.rowIndex="4" GridPane.valignment="TOP" />
+      										   <ComboBox editable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      										   <TextField GridPane.columnIndex="1" />
+      										   <Label text="commentGenerator.type" GridPane.rowIndex="5" />
+      										   <ListView GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      										   <Label text="resource" GridPane.rowIndex="1" />
+      										   <ComboBox editable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      										   <ComboBox editable="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      										   <Label text="commentGenerator.properties" GridPane.rowIndex="6" />
+      										   <ListView GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      										   <Label text="Context" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
+      										   <Label text="Label" GridPane.rowIndex="7" />
+      										   <Label text="Label" GridPane.rowIndex="8" />
+      										   <Label text="Label" GridPane.rowIndex="9" />
+      										   <Label text="Label" GridPane.rowIndex="10" />
+      										   <Label text="Label" GridPane.rowIndex="11" />
+      										   <Label text="Label" GridPane.rowIndex="12" />
+      										   <Label text="Label" GridPane.rowIndex="13" />
+      										   <Label text="Label" GridPane.rowIndex="14" />
+      										   <Label text="Label" GridPane.rowIndex="15" />
+      										   <Label text="Label" GridPane.rowIndex="16" />
+      										   <Label text="Label" GridPane.rowIndex="17" />
+      										   <Label text="Label" GridPane.rowIndex="18" />
+      										   <Label text="Label" GridPane.rowIndex="19" />
+      										   <Label text="Label" GridPane.rowIndex="20" />
+      										   <Label text="Label" GridPane.rowIndex="21" />
+      										   <Label text="Label" GridPane.rowIndex="30" />
+      										</children>
+      									 </GridPane>
+      								  </content>
+      								</ScrollPane>
+                              <HBox prefHeight="100.0" prefWidth="200.0" />
+                           </children>
+                        </HBox>
+							</content>
+						  </Tab>
                       </tabs>
                   </TabPane>
             </items>

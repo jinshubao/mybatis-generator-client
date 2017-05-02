@@ -190,4 +190,5 @@
       COUNTRY_NAME = #{countryName,jdbcType=VARCHAR}
     where CITY_ID = #{cityId,jdbcType=INTEGER}
   </update>
+  
 </mapper>
