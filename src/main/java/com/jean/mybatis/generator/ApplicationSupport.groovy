@@ -21,6 +21,7 @@ abstract class ApplicationSupport extends Application {
 
     @Override
     void init() throws Exception {
+        
         logger.info("application init...")
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this))
         applicationContext = SpringApplication.run(getClass(), args)

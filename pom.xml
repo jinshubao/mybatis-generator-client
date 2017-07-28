@@ -13,7 +13,6 @@
     <packaging>jar</packaging>
 	
     <name>mybatis-generator-client</name>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>com.jean.mybatis.generator.MainApplication</mainClass>

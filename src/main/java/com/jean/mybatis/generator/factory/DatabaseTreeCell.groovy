@@ -3,6 +3,7 @@ package com.jean.mybatis.generator.factory
 import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.model.*
 import com.jean.mybatis.generator.utils.DialogUtil
+import javafx.event.ActionEvent
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -118,7 +119,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
         def item = treeItem.value as DatabaseTableItem
         ContextMenu contextMenu = new ContextMenu()
         MenuItem gen = new MenuItem("生成SQL映射文件")
-        gen.setOnAction { generate() }
+        gen.setOnAction { generate(it) }
         contextMenu.getItems().addAll(gen)
         setContextMenu(contextMenu)
         setGraphic(new ImageView(new Image("/image/database_table.png")))
@@ -161,7 +162,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
         }
     }
 
-    void generate() {
-
+    void generate(ActionEvent event) {
+        logger.info(getItem().toString())
     }
 }

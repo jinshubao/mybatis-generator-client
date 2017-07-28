@@ -25,7 +25,7 @@ class TreeCellFactory implements Callback<TreeView<AbstractTreeCellItem>, TreeCe
 
     @Override
     TreeCell<AbstractTreeCellItem> call(TreeView<AbstractTreeCellItem> param) {
-        def cell = new DatabaseTreeCell(metadataService,logger)
+        def cell = new DatabaseTreeCell(metadataService, logger)
         cell.setOnMouseClicked() {
             if (it.button == MouseButton.PRIMARY && it.clickCount == 2) {
                 logger.info(it.source.toString())

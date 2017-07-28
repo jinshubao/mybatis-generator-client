@@ -43,7 +43,7 @@ class MainApplication extends ApplicationSupport {
         CommonConstant.SCENES.put(StageTypeEnum.MAIN.toString(), root)
         Parent databaseConnection = loadFxml("/fxml/Connection.fxml")
         CommonConstant.SCENES.put(StageTypeEnum.CONNECTION.toString(), databaseConnection)
-        Parent configuration = loadFxml("/fxml/configuration.fxml")
+        Parent configuration = loadFxml("/fxml/Configuration.fxml")
         CommonConstant.SCENES.put(StageTypeEnum.CONFIGURATION.toString(), configuration)
         Scene scene = new Scene(root)
         scene.getStylesheets().add("/styles/Styles.css")
