@@ -79,4 +79,10 @@ class BaseTest {
         MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
         myBatisGenerator.generate(null)
     }
+    @Test
+    void test4(){
+        println "AsdfadsfAsdfadfAsdf".collect {
+            it == it.toUpperCase() ? "_" + it : it.toUpperCase()
+        }.join("")
+    }
 }

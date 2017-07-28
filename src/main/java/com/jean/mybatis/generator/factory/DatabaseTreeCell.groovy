@@ -1,14 +1,13 @@
 package com.jean.mybatis.generator.factory
 
+import com.jean.mybatis.generator.controller.MainController
 import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.model.*
 import com.jean.mybatis.generator.utils.DialogUtil
-import javafx.event.ActionEvent
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
-import org.slf4j.Logger
 
 /**
  *
@@ -16,13 +15,12 @@ import org.slf4j.Logger
  */
 class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
 
-    protected final Logger logger
+    protected Collection<IMetadataService> metadataServices
+    protected MainController mainController
 
-    protected IMetadataService metadataService
-
-    DatabaseTreeCell(IMetadataService metadataService, Logger logger) {
-        this.metadataService = metadataService
-        this.logger = logger
+    DatabaseTreeCell(MainController mainController, Collection<IMetadataService> metadataServices) {
+        this.metadataServices = metadataServices
+        this.mainController = mainController
     }
 
     @Override
@@ -92,7 +90,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
         contextMenu.setPrefWidth(100)
         MenuItem open = new MenuItem("打开数据库")
         MenuItem close = new MenuItem("关闭数据库")
-        MenuItem gen = new MenuItem("生成SQL映射文件")
+        MenuItem gen = new MenuItem("添加所有表到生成列表")
         MenuItem refresh = new MenuItem("刷新")
         open.disableProperty().bind(item.isOpen)
         close.disableProperty().bind(item.isOpen.not())
@@ -105,6 +103,12 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
             treeItem.children.clear()
             item.isOpen.set(false)
         }
+        gen.setOnAction({
+            def tableNames = treeItem.getChildren()*.value*.tableName as List
+            tableNames.each {
+                mainController.addModelMap(it as String, it as String)
+            }
+        })
         refresh.setOnAction {
             treeItem.children.clear()
             openDatabase(treeItem)
@@ -118,8 +122,10 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
     private void updateTableItem(TreeItem treeItem) {
         def item = treeItem.value as DatabaseTableItem
         ContextMenu contextMenu = new ContextMenu()
-        MenuItem gen = new MenuItem("生成SQL映射文件")
-        gen.setOnAction { generate(it) }
+        MenuItem gen = new MenuItem("添加表到生成列表")
+        gen.setOnAction {
+            mainController.addModelMap(item.tableName, null)
+        }
         contextMenu.getItems().addAll(gen)
         setContextMenu(contextMenu)
         setGraphic(new ImageView(new Image("/image/database_table.png")))
@@ -128,7 +134,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
 
     void openConnection(TreeItem treeItem) {
         try {
-            def databases = metadataService.getDatabases(treeItem.value as DatabaseConfig)
+            def databases = metadataServices[0].getDatabases(treeItem.value as DatabaseConfig)
             databases.each {
                 def databaseItem = new DatabaseItem(item)
                 databaseItem.databaseName = it as String
@@ -144,11 +150,9 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
 
     void openDatabase(TreeItem treeItem) {
         try {
-            def temp = treeItem.value
-            logger.info(temp.toString())
             def item = treeItem.value as DatabaseItem
             if (treeItem.children.isEmpty()) {
-                metadataService.getTables(item, item.databaseName).each { table ->
+                metadataServices[0].getTables(item, item.databaseName).each { table ->
                     def cfg = new DatabaseTableItem(item)
                     cfg.tableName = table as String
                     treeItem.children.add(new TreeItem(cfg))
@@ -157,12 +161,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
                 item.isOpen.set(true)
             }
         } catch (Exception e) {
-            logger.error(e.message, e)
             DialogUtil.exceptionDialog("打开失败", "打开数据库失败", e)
         }
-    }
-
-    void generate(ActionEvent event) {
-        logger.info(getItem().toString())
     }
 }

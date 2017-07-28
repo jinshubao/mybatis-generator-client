@@ -34,8 +34,8 @@ class MainApplication extends ApplicationSupport {
     @Override
     void start(Stage stage) throws Exception {
         super.start(stage)
-//        main(stage)
-        pathTransition(stage)
+        main(stage)
+//        pathTransition(stage)
     }
 
     void main(Stage stage){
