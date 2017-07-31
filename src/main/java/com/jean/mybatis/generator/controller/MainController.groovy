@@ -133,10 +133,7 @@ class MainController extends BaseController {
 
         this.camelCase.setSelected(true)
 
-        this.generate.disableProperty().bind(projectPath.textProperty().isEmpty()
-                .or(modelPackage.textProperty().isEmpty())
-                .or(daoPackage.textProperty().isEmpty())
-                .or(mapperPath.textProperty().isEmpty()))
+
         def configuration = new Configuration()
         def context = new Context(ModelType.HIERARCHICAL)
         context.setId("context1")
@@ -166,13 +163,13 @@ class MainController extends BaseController {
         context.setJavaModelGeneratorConfiguration(javaModelGenerator)
 
         def javaClientGenerator = new JavaClientGeneratorConfiguration()
+        javaClientGenerator.setConfigurationType("XMLMAPPER")//
+        javaClientGenerator.addProperty("enableSubPackages", "true")//
         javaClientGenerator.setTargetPackage(this.daoPackage.text)
         this.daoPackage.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
             javaClientGenerator.setTargetPackage(newValue)
         } as ChangeListener)
-        javaClientGenerator.setConfigurationType("XMLMAPPER")//
-        javaClientGenerator.addProperty("enableSubPackages", "true")//
-        context.setJavaClientGeneratorConfiguration(javaClientGenerator)
+
         def sqlMapGenerator = new SqlMapGeneratorConfiguration()
         if (this.projectPath.text) {
             def text = this.projectPath.text
@@ -185,7 +182,7 @@ class MainController extends BaseController {
             javaClientGenerator.setTargetProject(javaPath)
             sqlMapGenerator.setTargetProject(resourcePath)
         }
-        context.setSqlMapGeneratorConfiguration(sqlMapGenerator)
+
         this.projectPath.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
             def javaPath = null
             def resourcePath = null
@@ -200,16 +197,22 @@ class MainController extends BaseController {
             javaClientGenerator.setTargetProject(javaPath)
             sqlMapGenerator.setTargetProject(resourcePath)
         } as ChangeListener)
+        context.setJavaClientGeneratorConfiguration(javaClientGenerator)
 
+        sqlMapGenerator.setTargetPackage(this.mapperPath.text)
         this.mapperPath.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
             sqlMapGenerator.setTargetPackage(newValue)
         } as ChangeListener)
-
+        context.setSqlMapGeneratorConfiguration(sqlMapGenerator)
         configuration.addContext(context)
 
         def generatorService = new GeneratorService(configuration, true)
 
-        this.generate.disableProperty().bind(generatorService.runningProperty())
+        this.generate.disableProperty().bind(generatorService.runningProperty()
+                .or(projectPath.textProperty().isEmpty())
+                .or(modelPackage.textProperty().isEmpty())
+                .or(daoPackage.textProperty().isEmpty())
+                .or(mapperPath.textProperty().isEmpty()))
         this.message.textProperty().bind(generatorService.messageProperty())
         this.progressIndicator.visibleProperty().bind(generatorService.runningProperty())
         this.generate.setOnAction({
@@ -228,8 +231,6 @@ class MainController extends BaseController {
                     def textFiled = it as TextField
                     def table = new TableConfiguration(context)
                     table.setTableName(textFiled.text)
-                    table.setDomainObjectName()
-
                     table.setSelectByExampleStatementEnabled(false)
                     table.setDeleteByExampleStatementEnabled(false)
                     table.setUpdateByExampleStatementEnabled(false)
@@ -237,7 +238,7 @@ class MainController extends BaseController {
                         //使用表字段名
                         table.addProperty("useActualColumnNames", "true")
                     }
-                    table.setGeneratedKey(new GeneratedKey("id", "Mysql", true, "post"))
+                    table.setGeneratedKey(new GeneratedKey("id", "Mysql", false, "pre"))
                     context.addTableConfiguration(table)
                 }
             }

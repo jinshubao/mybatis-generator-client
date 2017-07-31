@@ -28,7 +28,6 @@ class CommentPlugin extends PluginAdapter {
 
     @Override
     boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-        println introspectedTable.remarks
         topLevelClass.addJavaDocLine("/**")
         topLevelClass.addJavaDocLine(" * ${introspectedTable.remarks}")
         topLevelClass.addJavaDocLine(" */")

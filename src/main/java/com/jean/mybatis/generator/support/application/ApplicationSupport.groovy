@@ -7,11 +7,10 @@ import javafx.scene.Parent
 import javafx.stage.Stage
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
 
 /**
- * JavaFX-SpringBoot 适配
+ * JavaFX-Spring 适配
  * Created by jinshubao on 2017/4/8.
  */
 abstract class ApplicationSupport extends Application {
@@ -23,8 +22,7 @@ abstract class ApplicationSupport extends Application {
     void init() throws Exception {
         logger.info("application init...")
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this))
-        applicationContext = SpringApplication.run(getClass(), args)
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(this)
+
     }
 
     @Override
@@ -36,7 +34,7 @@ abstract class ApplicationSupport extends Application {
     @Override
     void stop() throws Exception {
         logger.info("application stop...")
-        applicationContext.close()
+        applicationContext?.close()
     }
 
     protected static void launchApp(Class<? extends ApplicationSupport> applicationClass, String[] args) {
@@ -49,7 +47,7 @@ abstract class ApplicationSupport extends Application {
         logger.info("loadFxml {}", name)
         FXMLLoader loader = new FXMLLoader()
         loader.setControllerFactory {
-            applicationContext.getBean(it)
+            applicationContext?.getBean(it)
         }
         loader.load(getClass().getResourceAsStream(name))
     }
