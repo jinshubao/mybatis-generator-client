@@ -2,6 +2,7 @@ package com.jean.mybatis.generator
 
 import com.jean.mybatis.generator.constant.CommonConstant
 import com.jean.mybatis.generator.model.StageTypeEnum
+import com.jean.mybatis.generator.support.application.ApplicationSupport
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.animation.PathTransition
 import javafx.animation.Timeline

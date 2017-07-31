@@ -1,13 +1,11 @@
 package com.jean.mybatis.generator.controller
 
-import com.jean.mybatis.generator.database.IMetadataService
 import com.jean.mybatis.generator.model.DatabaseConfig
-import com.jean.mybatis.generator.model.DatabaseTypeEnum
+import com.jean.mybatis.generator.model.DatabaseType
 import com.jean.mybatis.generator.model.EncodingEnum
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.fxml.FXML
 import javafx.scene.control.*
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 
 /**
@@ -18,30 +16,27 @@ import org.springframework.stereotype.Controller
 class ConnectionController extends BaseController {
 
     @FXML
-    ComboBox<DatabaseTypeEnum> dataBaseType
+    private ComboBox<DatabaseType> dataBaseType
     @FXML
-    TextField host
+    private TextField host
     @FXML
-    TextField port
+    private TextField port
     @FXML
-    TextField username
+    private TextField username
     @FXML
-    PasswordField password
+    private PasswordField password
     @FXML
-    ComboBox<EncodingEnum> encoding
+    private ComboBox<EncodingEnum> encoding
     @FXML
-    TextField properties
+    private TextField properties
     @FXML
-    Button testConnection
+    private Button testConnection
     @FXML
-    CheckBox savePassword
-
-    @Autowired
-    IMetadataService metadataService
+    private CheckBox savePassword
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-        dataBaseType.items.addAll(DatabaseTypeEnum.values())
+        dataBaseType.items.addAll(DatabaseType.values())
         dataBaseType.selectionModel.selectFirst()
         encoding.items.addAll(EncodingEnum.values())
         encoding.selectionModel.selectFirst()
@@ -49,14 +44,16 @@ class ConnectionController extends BaseController {
         testConnection.setOnAction {
             try {
                 def config = new DatabaseConfig()
-                config.databaseType = dataBaseType.value
-                config.host = host.getText()
-                config.port = port.getText()
-                config.username = username.getText()
-                config.password = password.getText()
+                config.type = dataBaseType.value
+                config.host = host.text
+                config.port = port.text
+                config.username = username.text
+                config.password = password.text
                 config.encoding = encoding.value
-                config.properties = properties.getText()
-                metadataService.testConnection(config)
+                config.properties = properties.text
+                def service = chooseMetadataService(config.type)
+                service.setConfig(config)
+                service.testConnection()
                 DialogUtil.information("连接成功", null, "连接成功")
             } catch (Exception e) {
                 DialogUtil.exceptionDialog("连接失败", "连接失败", e)

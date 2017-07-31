@@ -1,7 +1,7 @@
 package com.jean.mybatis.generator.controller
 
 import com.jean.mybatis.generator.constant.CommonConstant
-import com.jean.mybatis.generator.database.IMetadataService
+import com.jean.mybatis.generator.core.GeneratorService
 import com.jean.mybatis.generator.factory.TreeCellFactory
 import com.jean.mybatis.generator.model.AbstractTreeCellItem
 import com.jean.mybatis.generator.model.ConnectionItem
@@ -10,13 +10,14 @@ import com.jean.mybatis.generator.model.StageTypeEnum
 import com.jean.mybatis.generator.utils.DialogUtil
 import com.jean.mybatis.generator.utils.StringUtil
 import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.fxml.FXML
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.stage.DirectoryChooser
-import org.springframework.beans.factory.annotation.Autowired
+import org.mybatis.generator.config.*
 import org.springframework.stereotype.Controller
 
 /**
@@ -27,94 +28,95 @@ import org.springframework.stereotype.Controller
 class MainController extends BaseController {
 
     @FXML
-    TreeView<AbstractTreeCellItem> databaseView
+    private TreeView<AbstractTreeCellItem> databaseView
 
     @FXML
-    MenuBar menuBar
+    private MenuBar menuBar
     @FXML
-    Menu fileMenu
+    private Menu fileMenu
     @FXML
-    MenuItem newConnectionMenuItem
+    private MenuItem newConnectionMenuItem
     @FXML
-    MenuItem exitMenuItem
+    private MenuItem exitMenuItem
 
     @FXML
-    Menu editMenu
+    private Menu editMenu
     @FXML
-    MenuItem newConfigurationMenuItem
+    private MenuItem newConfigurationMenuItem
     @FXML
-    MenuItem manageConfigurationMenuItem
+    private MenuItem manageConfigurationMenuItem
     @FXML
-    Menu configurationListMenu
+    private Menu configurationListMenu
     @FXML
-    ToggleGroup configurationGroup
+    private ToggleGroup configurationGroup
 
     @FXML
-    Menu helpMenu
+    private Menu helpMenu
     @FXML
-    MenuItem aboutMenuItem
+    private MenuItem aboutMenuItem
 
     @FXML
-    ProgressIndicator progressIndicator
+    private ProgressIndicator progressIndicator
     @FXML
-    Label message
+    private Label message
 
     @FXML
-    public TextField projectPath
+    private TextField projectPath
     @FXML
-    public Button explorerProject
+    private Button explorerProject
     @FXML
-    public CheckBox camelCase
+    private CheckBox camelCase
     @FXML
-    public Button addModelMap
+    private Button addModelMap
     @FXML
-    public Button generate
+    private Button generate
     @FXML
-    public TextField modelPackage
+    private TextField modelPackage
     @FXML
-    public TextField mapperPath
+    private TextField mapperPath
     @FXML
-    public TextField daoPackage
+    private TextField daoPackage
     @FXML
-    public GridPane modelMap
-
-    @Autowired
-    Collection<IMetadataService> metadataService
+    private GridPane modelMap
 
     @Override
     void initialize(URL location, ResourceBundle resources) {
-        databaseView.setRoot(new TreeItem())
-        databaseView.setShowRoot(false)
-        message.setText(null)
-        progressIndicator.setVisible(false)
-        newConnectionMenuItem.setOnAction {
+        this.databaseView.setRoot(new TreeItem())
+        this.databaseView.setShowRoot(false)
+        this.message.setText(null)
+        this.progressIndicator.setVisible(false)
+        DatabaseConfig databaseConfig = null
+        this.newConnectionMenuItem.setOnAction {
             DialogUtil.newConnectionDialog("新建数据库连接", null,
                     CommonConstant.SCENES.get(StageTypeEnum.CONNECTION.toString()) as Pane).ifPresent { DatabaseConfig config ->
+                def service = chooseMetadataService(config.type)
+                service.setConfig(config)
+                databaseConfig = config
                 def connection = new TreeItem(new ConnectionItem(config))
-                databaseView.getRoot().getChildren().add(connection)
+                this.databaseView.getRoot().getChildren().add(connection)
             }
         }
-        newConfigurationMenuItem.setOnAction {
+        this.newConfigurationMenuItem.setOnAction {
             DialogUtil.configurationDialog("新增配置文件", null,
                     CommonConstant.SCENES.get(StageTypeEnum.CONFIGURATION.toString()) as Node).ifPresent {
                 logger.info(it.toString())
             }
         }
 
-        databaseView.setCellFactory(new TreeCellFactory(this, this.metadataService))
-        explorerProject.setOnAction {
+        this.databaseView.setCellFactory(new TreeCellFactory(this, this.metadataServices))
+        this.explorerProject.setOnAction {
             def chooser = new DirectoryChooser()
             def window = (it.getSource() as Node).scene.window
             def file = chooser.showDialog(window)
             if (file) {
-                projectPath.setText(file.getAbsolutePath())
+                this.projectPath.setText(file.getAbsolutePath())
             }
         }
 
-        addModelMap.setOnAction {
+        this.addModelMap.setOnAction {
             addModelMap(null, null)
         }
-        camelCase.selectedProperty().addListener({ observable, oldValue, newValue ->
+        this.camelCase.selectedProperty().addListener({ observable, oldValue, newValue ->
             if (newValue != null) {
                 modelMap.getChildren().each {
                     if (it instanceof TextField && it.getId() == MODEL_NAME) {
@@ -129,37 +131,130 @@ class MainController extends BaseController {
             }
         } as ChangeListener)
 
-        camelCase.setSelected(true)
+        this.camelCase.setSelected(true)
 
-        generate.disableProperty().bind(projectPath.textProperty().isEmpty()
+        this.generate.disableProperty().bind(projectPath.textProperty().isEmpty()
                 .or(modelPackage.textProperty().isEmpty())
                 .or(daoPackage.textProperty().isEmpty())
                 .or(mapperPath.textProperty().isEmpty()))
+        def configuration = new Configuration()
+        def context = new Context(ModelType.HIERARCHICAL)
+        context.setId("context1")
+        context.setTargetRuntime("MyBatis3Simple")
+        context.addProperty("beginningDelimiter", "`")
+        context.addProperty("endingDelimiter", "`")
 
-        generate.setOnAction({
-            //todo 生成代码
+        context.addPluginConfiguration(new PluginConfiguration(configurationType: "org.mybatis.generator.plugins.SerializablePlugin"))
+        context.addPluginConfiguration(new PluginConfiguration(configurationType: "com.jean.mybatis.generator.plugins.CommentPlugin"))
 
+        def commentGenerator = new CommentGeneratorConfiguration()
+        commentGenerator.addProperty("suppressAllComments", "true")
+        commentGenerator.addProperty("addRemarkComments", "true")
+        commentGenerator.addProperty("suppressDate", "true")
+        context.setCommentGeneratorConfiguration(commentGenerator)
+
+
+        def javaTypeResolver = new JavaTypeResolverConfiguration()
+        javaTypeResolver.addProperty("forceBigDecimals", "true")
+        context.setJavaTypeResolverConfiguration(javaTypeResolver)
+
+        def javaModelGenerator = new JavaModelGeneratorConfiguration()
+        javaModelGenerator.setTargetPackage(this.modelPackage.text)
+        this.modelPackage.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
+            javaModelGenerator.setTargetPackage(newValue)
+        } as ChangeListener)
+        context.setJavaModelGeneratorConfiguration(javaModelGenerator)
+
+        def javaClientGenerator = new JavaClientGeneratorConfiguration()
+        javaClientGenerator.setTargetPackage(this.daoPackage.text)
+        this.daoPackage.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
+            javaClientGenerator.setTargetPackage(newValue)
+        } as ChangeListener)
+        javaClientGenerator.setConfigurationType("XMLMAPPER")//
+        javaClientGenerator.addProperty("enableSubPackages", "true")//
+        context.setJavaClientGeneratorConfiguration(javaClientGenerator)
+        def sqlMapGenerator = new SqlMapGeneratorConfiguration()
+        if (this.projectPath.text) {
+            def text = this.projectPath.text
+            if (!text.endsWith(File.separator)) {
+                text = text + File.separator
+            }
+            def javaPath = text + "src" + File.separator + "main" + File.separator + "java" + File.separator
+            def resourcePath = text + "src" + File.separator + "main" + File.separator + "resources" + File.separator
+            javaModelGenerator.setTargetProject(javaPath)
+            javaClientGenerator.setTargetProject(javaPath)
+            sqlMapGenerator.setTargetProject(resourcePath)
+        }
+        context.setSqlMapGeneratorConfiguration(sqlMapGenerator)
+        this.projectPath.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
+            def javaPath = null
+            def resourcePath = null
+            if (newValue) {
+                if (!newValue.endsWith(File.separator)) {
+                    newValue = newValue + File.separator
+                }
+                javaPath = newValue + "src" + File.separator + "main" + File.separator + "java" + File.separator
+                resourcePath = newValue + "src" + File.separator + "main" + File.separator + "resources" + File.separator
+            }
+            javaModelGenerator.setTargetProject(javaPath)
+            javaClientGenerator.setTargetProject(javaPath)
+            sqlMapGenerator.setTargetProject(resourcePath)
+        } as ChangeListener)
+
+        this.mapperPath.textProperty().addListener({ ObservableValue<? extends String> observable, String oldValue, String newValue ->
+            sqlMapGenerator.setTargetPackage(newValue)
+        } as ChangeListener)
+
+        configuration.addContext(context)
+
+        def generatorService = new GeneratorService(configuration, true)
+
+        this.generate.disableProperty().bind(generatorService.runningProperty())
+        this.message.textProperty().bind(generatorService.messageProperty())
+        this.progressIndicator.visibleProperty().bind(generatorService.runningProperty())
+        this.generate.setOnAction({
+            //点击
+            def jdbcConnection = new JDBCConnectionConfiguration()
+            jdbcConnection.setDriverClass(databaseConfig.type.driverClass)
+            def service = chooseMetadataService(databaseConfig.type)
+            jdbcConnection.setConnectionURL(service.getConnectionUrl("message"))
+            jdbcConnection.setUserId(databaseConfig.username)
+            jdbcConnection.setPassword(databaseConfig.password)
+            context.setJdbcConnectionConfiguration(jdbcConnection)
+
+            context.tableConfigurations.clear()
+            this.modelMap.getChildren().each {
+                if (it.getId() == TABLE_NAME) {
+                    def textFiled = it as TextField
+                    def table = new TableConfiguration(context)
+                    table.setTableName(textFiled.text)
+                    table.setDomainObjectName()
+
+                    table.setSelectByExampleStatementEnabled(false)
+                    table.setDeleteByExampleStatementEnabled(false)
+                    table.setUpdateByExampleStatementEnabled(false)
+                    if (!this.camelCase.selected) {
+                        //使用表字段名
+                        table.addProperty("useActualColumnNames", "true")
+                    }
+                    table.setGeneratedKey(new GeneratedKey("id", "Mysql", true, "post"))
+                    context.addTableConfiguration(table)
+                }
+            }
+            generatorService.restart()
         })
-        /*List<String> warnings = new ArrayList<String>()
-        boolean overwrite = true;
-        Configuration config = new Configuration()
 
-        //   ... fill out the config object as appropriate...
-
-        DefaultShellCallback callback = new DefaultShellCallback(overwrite)
-        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings)
-        myBatisGenerator.generate(null)*/
     }
 
     public static final String MODEL_NAME = "model_name"
     public static final String TABLE_NAME = "table_name"
 
-    public void addModelMap(String tableName, String modelName) {
-        def row = GridPane.getRowIndex(addModelMap)
+    void addModelMap(String tableName, String modelName) {
+        def row = GridPane.getRowIndex(this.addModelMap)
         def table = new TextField(tableName)
         GridPane.setConstraints(table, 1, row)
 
-        if (modelName && camelCase.selected) {
+        if (modelName && this.camelCase.selected) {
             modelName = StringUtil.toCamelCase(modelName, true)
         }
 
@@ -195,9 +290,9 @@ class MainController extends BaseController {
         def constraints = new RowConstraints(10D, 30D, Region.USE_COMPUTED_SIZE)
         constraints.setVgrow(Priority.SOMETIMES)
         constraints.setPercentHeight(-1)
-        modelMap.rowConstraints.add(1, constraints)
+        this.modelMap.rowConstraints.add(1, constraints)
         //让按钮到下一行
         GridPane.setRowIndex(addModelMap, ++row)
-        modelMap.getChildren().addAll(table, model, hbox)
+        this.modelMap.getChildren().addAll(table, model, hbox)
     }
 }

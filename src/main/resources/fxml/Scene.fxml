@@ -108,11 +108,11 @@
                                         <Label text="SQL映射文件包名" GridPane.rowIndex="2" />
                                         <TextField fx:id="projectPath" promptText="/workspace/example" GridPane.columnIndex="1" />
                                         <Label text="模型包名" GridPane.rowIndex="1" />
-                                        <TextField fx:id="modelPackage" promptText="com.example.model" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="modelPackage" promptText="com.example.model" GridPane.columnIndex="1" GridPane.rowIndex="1" text="com.example.model"/>
                                         <Button fx:id="explorerProject" mnemonicParsing="false" text="浏览" GridPane.columnIndex="2" />
-                                        <TextField fx:id="mapperPath" promptText="mapper" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <TextField fx:id="mapperPath" promptText="mapper" GridPane.columnIndex="1" GridPane.rowIndex="2" text="mapper"/>
                                         <Label text="接口的包名" GridPane.rowIndex="3" />
-                                        <TextField fx:id="daoPackage" promptText="com.example.dao" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <TextField fx:id="daoPackage" promptText="com.example.dao" GridPane.columnIndex="1" GridPane.rowIndex="3" text="com.example.dao"/>
                                         <CheckBox fx:id="camelCase" mnemonicParsing="false" text="启用驼峰命名" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                     </children>
                                 </GridPane>

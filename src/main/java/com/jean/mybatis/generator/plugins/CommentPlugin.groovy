@@ -11,6 +11,7 @@ import org.mybatis.generator.api.dom.java.TopLevelClass
  * Created by jinshubao on 2017/4/14.
  */
 class CommentPlugin extends PluginAdapter {
+
     @Override
     boolean validate(List<String> list) {
         return true
@@ -22,14 +23,15 @@ class CommentPlugin extends PluginAdapter {
         field.addJavaDocLine("/**")
         field.addJavaDocLine(" * ${introspectedColumn.remarks}")
         field.addJavaDocLine(" */")
-        println introspectedColumn.remarks
         return true
     }
-    public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+
+    @Override
+    boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         println introspectedTable.remarks
         topLevelClass.addJavaDocLine("/**")
         topLevelClass.addJavaDocLine(" * ${introspectedTable.remarks}")
         topLevelClass.addJavaDocLine(" */")
-        return true;
+        return true
     }
 }

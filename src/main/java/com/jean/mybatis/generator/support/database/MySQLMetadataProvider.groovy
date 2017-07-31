@@ -1,6 +1,7 @@
-package com.jean.mybatis.generator.database
+package com.jean.mybatis.generator.support.database
 
 import com.jean.mybatis.generator.model.DatabaseConfig
+import com.jean.mybatis.generator.model.DatabaseType
 import com.jean.mybatis.generator.model.TableInfo
 import groovy.sql.Sql
 import org.springframework.stereotype.Service
@@ -10,17 +11,37 @@ import org.springframework.stereotype.Service
  * Created by jinshubao on 2017/4/9.
  */
 @Service
-class MySQLMetadataService implements IMetadataService {
+class MySQLMetadataProvider implements IDataBaseMetadataProvider {
 
+    protected DatabaseConfig config
 
-    protected Sql getSql(DatabaseConfig config, String databaseName) {
-        def url = getConnectionUrl(config, databaseName)
-        return Sql.newInstance(url, config.username, config.password, config.databaseType.value)
+    DatabaseConfig getConfig() {
+        return config
+    }
+
+    void setConfig(DatabaseConfig config) {
+        this.config = config
     }
 
     @Override
-    List getDatabases(DatabaseConfig config) {
-        def sql = getSql(config, null)
+    DatabaseConfig getDatabaseConfig() {
+        return config
+    }
+
+    protected Sql getSql(String databaseName) {
+        def url = getConnectionUrl(databaseName)
+        return Sql.newInstance(url, config.username, config.password, config.type.driverClass)
+    }
+
+
+    protected Sql getSql() {
+        def url = getConnectionUrl()
+        return Sql.newInstance(url, config.username, config.password, config.type.driverClass)
+    }
+
+    @Override
+    List getDatabases() {
+        def sql = getSql()
         def list = []
         sql.eachRow("SELECT SCHEMA_NAME FROM `information_schema`.`SCHEMATA`") {
             list << it.SCHEMA_NAME
@@ -29,14 +50,14 @@ class MySQLMetadataService implements IMetadataService {
     }
 
     @Override
-    boolean testConnection(DatabaseConfig config) {
-        def sql = getSql(config, null)
+    boolean testConnection() {
+        def sql = getSql()
         return sql != null
     }
 
     @Override
-    List getTables(DatabaseConfig config, String databaseName) {
-        def sql = getSql(config, databaseName)
+    List getTables(String databaseName) {
+        def sql = getSql(databaseName)
         def list = []
         sql.eachRow("SELECT TABLE_NAME FROM `INFORMATION_SCHEMA`.`TABLES` WHERE TABLE_SCHEMA=?", [databaseName]) {
             list << it.TABLE_NAME
@@ -44,7 +65,7 @@ class MySQLMetadataService implements IMetadataService {
         return list
     }
 
-    String getConnectionUrl(DatabaseConfig config, String databaseName) {
+    String getConnectionUrl(String databaseName) {
         def url = "jdbc:mysql://${config.host}:${config.port}"
         if (databaseName) {
             url += "/${databaseName}"
@@ -64,13 +85,22 @@ class MySQLMetadataService implements IMetadataService {
         return url
     }
 
+    String getConnectionUrl() {
+        getConnectionUrl(null)
+    }
+
     @Override
-    List<TableInfo> getColumns(DatabaseConfig config, String databaseName, String tableName) {
-        def sql = getSql(config, databaseName)
+    List<TableInfo> getColumns(String databaseName, String tableName) {
+        def sql = getSql(databaseName)
         def list = []
         sql.eachRow("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ?", [tableName]) {
             list << new TableInfo(it.COLUMN_NAME, it.DATA_TYPE, it.COLUMN_COMMENT)
         }
         return list
+    }
+
+    @Override
+    DatabaseType getType() {
+        return DatabaseType.MySql
     }
 }

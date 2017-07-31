@@ -1,7 +1,7 @@
 package com.jean.mybatis.generator.utils
 
 import com.jean.mybatis.generator.model.DatabaseConfig
-import com.jean.mybatis.generator.model.DatabaseTypeEnum
+import com.jean.mybatis.generator.model.DatabaseType
 import com.jean.mybatis.generator.model.EncodingEnum
 import javafx.scene.Node
 import javafx.scene.control.*
@@ -131,7 +131,7 @@ class DialogUtil {
                     }
                 }
                 def config = new DatabaseConfig()
-                config.databaseType = values?.dataBaseType as DatabaseTypeEnum
+                config.type = values?.dataBaseType as DatabaseType
                 config.host = values?.host as String
                 config.port = values?.port as String
                 config.username = values?.username as String

@@ -10,7 +10,7 @@ abstract class AbstractTreeCellItem extends DatabaseConfig {
     def isOpen = new SimpleBooleanProperty()
 
     AbstractTreeCellItem(DatabaseConfig config) {
-        this.databaseType = config.databaseType
+        this.type = config.type
         this.encoding = config.encoding
         this.host = config.host
         this.port = config.port

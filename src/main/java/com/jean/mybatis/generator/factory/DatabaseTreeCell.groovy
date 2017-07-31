@@ -1,7 +1,7 @@
 package com.jean.mybatis.generator.factory
 
 import com.jean.mybatis.generator.controller.MainController
-import com.jean.mybatis.generator.database.IMetadataService
+import com.jean.mybatis.generator.support.database.IDataBaseMetadataProvider
 import com.jean.mybatis.generator.model.*
 import com.jean.mybatis.generator.utils.DialogUtil
 import javafx.scene.control.*
@@ -15,10 +15,10 @@ import javafx.scene.input.MouseButton
  */
 class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
 
-    protected Collection<IMetadataService> metadataServices
+    protected Collection<IDataBaseMetadataProvider> metadataServices
     protected MainController mainController
 
-    DatabaseTreeCell(MainController mainController, Collection<IMetadataService> metadataServices) {
+    DatabaseTreeCell(MainController mainController, Collection<IDataBaseMetadataProvider> metadataServices) {
         this.metadataServices = metadataServices
         this.mainController = mainController
     }
@@ -124,7 +124,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
         ContextMenu contextMenu = new ContextMenu()
         MenuItem gen = new MenuItem("添加表到生成列表")
         gen.setOnAction {
-            mainController.addModelMap(item.tableName, null)
+            mainController.addModelMap(item.tableName, item.tableName)
         }
         contextMenu.getItems().addAll(gen)
         setContextMenu(contextMenu)
@@ -134,7 +134,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
 
     void openConnection(TreeItem treeItem) {
         try {
-            def databases = metadataServices[0].getDatabases(treeItem.value as DatabaseConfig)
+            def databases = metadataServices[0].getDatabases()
             databases.each {
                 def databaseItem = new DatabaseItem(item)
                 databaseItem.databaseName = it as String
@@ -152,7 +152,7 @@ class DatabaseTreeCell extends TreeCell<AbstractTreeCellItem> {
         try {
             def item = treeItem.value as DatabaseItem
             if (treeItem.children.isEmpty()) {
-                metadataServices[0].getTables(item, item.databaseName).each { table ->
+                metadataServices[0].getTables(item.databaseName).each { table ->
                     def cfg = new DatabaseTableItem(item)
                     cfg.tableName = table as String
                     treeItem.children.add(new TreeItem(cfg))

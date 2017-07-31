@@ -5,7 +5,7 @@ package com.jean.mybatis.generator.model
  */
 class DatabaseConfig {
 
-    DatabaseTypeEnum databaseType
+    DatabaseType type
 
     String host
 

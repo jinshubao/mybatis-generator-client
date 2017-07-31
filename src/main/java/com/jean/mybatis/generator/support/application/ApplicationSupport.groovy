@@ -1,4 +1,4 @@
-package com.jean.mybatis.generator
+package com.jean.mybatis.generator.support.application
 
 import javafx.application.Application
 import javafx.application.Preloader
@@ -11,7 +11,7 @@ import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
 
 /**
- * javafx-springboot
+ * JavaFX-SpringBoot 适配
  * Created by jinshubao on 2017/4/8.
  */
 abstract class ApplicationSupport extends Application {
@@ -21,7 +21,6 @@ abstract class ApplicationSupport extends Application {
 
     @Override
     void init() throws Exception {
-        
         logger.info("application init...")
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_INIT, this))
         applicationContext = SpringApplication.run(getClass(), args)
