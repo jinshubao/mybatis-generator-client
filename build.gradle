@@ -3,18 +3,20 @@ version '1.0'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'application'
 
 buildscript {
 
     repositories {
-        mavenLocal()
         maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        mavenLocal()
     }
 }
 sourceCompatibility = 1.8
 
 [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 repositories {
+    maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
     mavenCentral()
 }
 
