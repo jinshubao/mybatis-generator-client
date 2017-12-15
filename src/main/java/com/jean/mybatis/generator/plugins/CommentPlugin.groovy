@@ -5,6 +5,7 @@ import org.mybatis.generator.api.IntrospectedTable
 import org.mybatis.generator.api.Plugin
 import org.mybatis.generator.api.PluginAdapter
 import org.mybatis.generator.api.dom.java.Field
+import org.mybatis.generator.api.dom.java.JavaElement
 import org.mybatis.generator.api.dom.java.TopLevelClass
 
 /**
@@ -19,18 +20,20 @@ class CommentPlugin extends PluginAdapter {
 
     @Override
     boolean modelFieldGenerated(Field field, TopLevelClass topLevelClass, IntrospectedColumn introspectedColumn, IntrospectedTable introspectedTable, Plugin.ModelClassType modelClassType) {
-        field.getJavaDocLines().clear()
-        field.addJavaDocLine("/**")
-        field.addJavaDocLine(" * ${introspectedColumn.remarks}")
-        field.addJavaDocLine(" */")
+        addJavaDocs(field, introspectedTable.remarks)
         return true
     }
 
     @Override
     boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-        topLevelClass.addJavaDocLine("/**")
-        topLevelClass.addJavaDocLine(" * ${introspectedTable.remarks}")
-        topLevelClass.addJavaDocLine(" */")
+        addJavaDocs(topLevelClass, introspectedTable.remarks)
         return true
+    }
+
+    private void addJavaDocs(JavaElement element, String doc) {
+        element.getJavaDocLines().clear()
+        element.addJavaDocLine("/**")
+        element.addJavaDocLine(" * ${doc}")
+        element.addJavaDocLine(" */")
     }
 }

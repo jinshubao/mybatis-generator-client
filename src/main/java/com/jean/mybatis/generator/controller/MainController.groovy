@@ -206,7 +206,7 @@ class MainController extends BaseController {
         context.setSqlMapGeneratorConfiguration(sqlMapGenerator)
         configuration.addContext(context)
 
-        def generatorService = new GeneratorService(configuration, true)
+        def generatorService = new GeneratorService(configuration)
 
         this.generate.disableProperty().bind(generatorService.runningProperty()
                 .or(projectPath.textProperty().isEmpty())

@@ -6,8 +6,8 @@ package com.jean.mybatis.generator.model
  */
 enum EncodingEnum {
 
-    MySQL("UTF-8", "UTF-8"),
-    Oracle("GBK", "GBK")
+    UTF8("UTF-8", "utf8"),
+    GBK("GBK", "GBK")
 
     String name
     String value

@@ -8,6 +8,7 @@ import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
+import javafx.stage.Screen
 import javafx.stage.Stage
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan
@@ -37,7 +38,8 @@ class MainApplication extends ApplicationSupport {
         CommonConstant.SCENES.put(StageTypeEnum.CONNECTION.toString(), databaseConnection)
         Parent configuration = loadFxml("/fxml/Configuration.fxml")
         CommonConstant.SCENES.put(StageTypeEnum.CONFIGURATION.toString(), configuration)
-        Scene scene = new Scene(root)
+        def bounds = Screen.getPrimary().getBounds()
+        Scene scene = new Scene(root, bounds.width, bounds.height)
         scene.getStylesheets().add("/styles/Styles.css")
         stage.setTitle("Mybatis Generator Client 1.0")
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/image/mybatis-logo.png")))

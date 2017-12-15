@@ -3,6 +3,7 @@ version '1.0'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'application'
 
 buildscript {
@@ -11,10 +12,20 @@ buildscript {
         maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
         mavenLocal()
     }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.1'
+    }
 }
 sourceCompatibility = 1.8
 
 [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+
+mainClassName = "com.jean.mybatis.generator.MainApplication"
+
+applicationName = "mybatis-generator-client"
+
+
 repositories {
     maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
     mavenCentral()

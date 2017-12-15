@@ -4,34 +4,31 @@ import javafx.concurrent.Service
 import javafx.concurrent.Task
 import org.mybatis.generator.api.MyBatisGenerator
 import org.mybatis.generator.api.ProgressCallback
+import org.mybatis.generator.api.ShellCallback
 import org.mybatis.generator.config.Configuration
 import org.mybatis.generator.internal.DefaultShellCallback
 
 class GeneratorService extends Service<List<String>> {
     Configuration configuration
-    boolean overwrite
+    ShellCallback callback
 
-    GeneratorService(Configuration configuration, boolean overwrite) {
+    GeneratorService(Configuration configuration) {
+        this(configuration, new DefaultShellCallback(true))
+    }
+
+    GeneratorService(Configuration configuration, ShellCallback callback) {
         this.configuration = configuration
-        this.overwrite = overwrite
+        this.callback = callback
     }
 
     @Override
     protected Task<List<String>> createTask() {
-        return new GeneratorTask<List<String>>() {
-            @Override
-            protected List<String> call() throws Exception {
-                List<String> warnings = new ArrayList<String>()
-                def myBatisGenerator = new MyBatisGenerator(configuration, new DefaultShellCallback(overwrite), warnings)
-                myBatisGenerator.generate(this)
-                return warnings
-            }
-        }
+        return new GeneratorTask<List<String>>(configuration, callback)
 
     }
 
     @Override
-    void restart() {
+    synchronized void restart() {
         if (!isRunning()) {
             super.restart()
         }
@@ -42,11 +39,26 @@ class GeneratorService extends Service<List<String>> {
         super.succeeded()
     }
 
-    static abstract class GeneratorTask<T> extends Task<T> implements ProgressCallback {
+    private static class GeneratorTask<T> extends Task<T> implements ProgressCallback {
 
+        private Configuration configuration
+        private ShellCallback shellCallback
         private int saveTaskIndex = 1
         private int introspectionTaskIndex = 1
         private int generationTaskIndex = 1
+
+        GeneratorTask(Configuration configuration, ShellCallback shellCallback) {
+            this.configuration = configuration
+            this.shellCallback = shellCallback
+        }
+
+        @Override
+        protected List<String> call() throws Exception {
+            List<String> warnings = new ArrayList<String>()
+            def myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings)
+            myBatisGenerator.generate(this)
+            return warnings
+        }
 
         @Override
         void introspectionStarted(int totalTasks) {
